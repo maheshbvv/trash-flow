@@ -14,8 +14,8 @@ export enum AuditAction {
 }
 
 export async function auditLog(params: {
-  userId?: string
-  email?: string
+  userId?: string | null
+  email?: string | null
   action: AuditAction
   details?: Record<string, unknown>
   ipAddress?: string

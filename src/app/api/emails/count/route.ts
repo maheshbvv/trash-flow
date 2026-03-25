@@ -41,8 +41,7 @@ export async function POST(req: NextRequest) {
     
     if (!validation.valid) {
       await auditLog({
-        userId: session.user?.email,
-        email: session.user?.email,
+        email: session.user?.email ?? undefined,
         action: AuditAction.INVALID_REQUEST,
         ipAddress: clientIP,
         details: { endpoint: '/api/emails/count', errors: validation.errors }
