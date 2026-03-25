@@ -12,25 +12,11 @@ export function middleware(request: NextRequest) {
     'Permissions-Policy',
     'camera=(), microphone=(), geolocation=()'
   )
+
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://gmail-bulk-trash.vercel.app https://vzitckpatxhthrnhdrlc.supabase.co;"
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://gmail-bulk-trash.vercel.app https://vzitckpatxhthrnhdrlc.supabase.co https://www.googleapis.com https://oauth2.googleapis.com;"
   )
-
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
-  const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    font-src 'self' https://fonts.gstatic.com;
-    img-src 'self' blob: data: https:;
-    connect-src 'self' https://gmail-bulk-trash.vercel.app https://vzitckpatxhthrnhdrlc.supabase.co;
-    frame-ancestors 'none';
-    base-uri 'self';
-    form-action 'self';
-  `.replace(/\s{2,}/g, ' ').trim()
-
-  response.headers.set('Content-Security-Policy', cspHeader)
 
   return response
 }
