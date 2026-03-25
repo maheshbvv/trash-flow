@@ -41,3 +41,14 @@ model Schedule {
   lastRunAt   DateTime?
   createdAt   DateTime @default(now())
 }
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  email       String?
+  action      String
+  details     String?  @db.Text
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+}

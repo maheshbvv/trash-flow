@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { getGmailClient, buildSearchQuery, formatDateForGmail } from "@/lib/gmail"
+import { rateLimit } from "@/lib/rate-limit"
+import { validateEmail, validateDateRange } from "@/lib/validation"
+import { auditLog, AuditAction } from "@/lib/audit"
 
 const MARKETING_KEYWORDS = [
   'promotion', 'sale', 'discount', 'offer', 'limited time', 
@@ -10,21 +13,49 @@ const MARKETING_KEYWORDS = [
   'unsubscribe', 'newsletter', 'update', 'invitation'
 ]
 
-const MARKETING_SENDERS = [
-  'newsletter', 'marketing', 'promo', 'offers', 'deals',
-  'advertising', 'campaign', 'subscribe'
-]
-
 export async function POST(req: NextRequest) {
+  const clientIP = req.headers.get('x-forwarded-for') || 'unknown'
+  const rateLimitResult = rateLimit(clientIP)
+  
+  if (!rateLimitResult.success) {
+    await auditLog({
+      action: AuditAction.RATE_LIMIT_EXCEEDED,
+      ipAddress: clientIP,
+      details: { endpoint: '/api/emails/count', resetTime: rateLimitResult.resetTime }
+    })
+    return NextResponse.json(
+      { error: "Too many requests", retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000) },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)) } }
+    )
+  }
+
   const session = await getServerSession(authOptions)
   
   if (!session?.accessToken) {
-    return NextResponse.json({ error: "Not authenticated", details: "No access token found" }, { status: 401 })
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
   }
 
   try {
     const body = await req.json()
-    const { from, dateFrom, dateTo, isMarketing } = body
+    const validation = validateEmail(body)
+    
+    if (!validation.valid) {
+      await auditLog({
+        userId: session.user?.email,
+        email: session.user?.email,
+        action: AuditAction.INVALID_REQUEST,
+        ipAddress: clientIP,
+        details: { endpoint: '/api/emails/count', errors: validation.errors }
+      })
+      return NextResponse.json({ error: "Invalid input", details: validation.errors }, { status: 400 })
+    }
+
+    const { sender, before, after } = validation.data
+    const { isMarketing } = body
+
+    if (!validateDateRange(before, after)) {
+      return NextResponse.json({ error: "Invalid date range" }, { status: 400 })
+    }
 
     const gmail = getGmailClient(session.accessToken as string)
 
@@ -32,25 +63,17 @@ export async function POST(req: NextRequest) {
 
     if (isMarketing) {
       const parts: string[] = []
-      
       parts.push('category:promotions')
-      
       const keywordQueries = MARKETING_KEYWORDS.map(k => `(subject:${k} OR subject:${k.toUpperCase()})`)
       parts.push(`(${keywordQueries.join(' OR ')})`)
-      
-      if (dateFrom) {
-        parts.push(`after:${formatDateForGmail(new Date(dateFrom))}`)
-      }
-      if (dateTo) {
-        parts.push(`before:${formatDateForGmail(new Date(dateTo))}`)
-      }
-      
+      if (after) parts.push(`after:${formatDateForGmail(new Date(after))}`)
+      if (before) parts.push(`before:${formatDateForGmail(new Date(before))}`)
       query = parts.join(' ')
     } else {
       query = buildSearchQuery({
-        from: from?.trim() || undefined,
-        after: dateFrom ? formatDateForGmail(new Date(dateFrom)) : undefined,
-        before: dateTo ? formatDateForGmail(new Date(dateTo)) : undefined,
+        from: sender?.trim() || undefined,
+        after: after ? formatDateForGmail(new Date(after)) : undefined,
+        before: before ? formatDateForGmail(new Date(before)) : undefined,
       })
     }
 
@@ -72,28 +95,29 @@ export async function POST(req: NextRequest) {
         pageToken,
       })
 
-      const responseData = response.data as any
+      const responseData = response.data as Record<string, unknown>
       if (responseData.error) {
         console.error("Gmail API error:", responseData.error)
-        return NextResponse.json({ 
-          error: responseData.error.message || "Gmail API error",
-          details: responseData.error
-        }, { status: 500 })
+        return NextResponse.json({ error: "Gmail API error" }, { status: 500 })
       }
 
-      const messages = responseData.messages || []
+      const messages = (responseData.messages as Array<unknown>) || []
       totalCount += messages.length
-      pageToken = responseData.nextPageToken || undefined
-
+      pageToken = responseData.nextPageToken as string | undefined
       if (totalCount >= 500) break
     } while (pageToken && attempts < maxAttempts)
 
-    return NextResponse.json({ count: totalCount, query, attempts })
-  } catch (error: any) {
+    await auditLog({
+      userId: session.user?.email,
+      email: session.user?.email,
+      action: AuditAction.EMAIL_COUNT,
+      ipAddress: clientIP,
+      details: { count: totalCount, sender, before, after, isMarketing }
+    })
+
+    return NextResponse.json({ count: totalCount, query, remaining: rateLimitResult.remaining })
+  } catch (error) {
     console.error("Error counting emails:", error)
-    return NextResponse.json({ 
-      error: "Failed to count emails",
-      details: error.message || String(error)
-    }, { status: 500 })
+    return NextResponse.json({ error: "Failed to count emails" }, { status: 500 })
   }
 }
