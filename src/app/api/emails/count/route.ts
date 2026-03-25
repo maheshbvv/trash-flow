@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const validation = validateEmail(body)
     
-    if (!validation.valid) {
+    if (!validation.valid || !validation.data) {
       await auditLog({
         email: session.user?.email ?? undefined,
         action: AuditAction.INVALID_REQUEST,
@@ -49,9 +49,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid input", details: validation.errors }, { status: 400 })
     }
 
-    const sender = validation.data.sender
-    const before = validation.data.before
-    const after = validation.data.after
+    const sender = validation.data?.sender
+    const before = validation.data?.before
+    const after = validation.data?.after
     const { isMarketing } = body
 
     if (!validateDateRange(before, after)) {
