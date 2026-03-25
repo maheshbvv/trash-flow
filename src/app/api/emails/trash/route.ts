@@ -36,14 +36,15 @@ export async function POST(req: NextRequest) {
     const validation = validateEmail(body)
     
     if (!validation.valid || !validation.data) {
+      const errors = 'errors' in validation ? validation.errors : []
       await auditLog({
         userId: session.user.email,
         email: session.user.email,
         action: AuditAction.INVALID_REQUEST,
         ipAddress: clientIP,
-        details: { endpoint: '/api/emails/trash', errors: validation.errors }
+        details: { endpoint: '/api/emails/trash', errors }
       })
-      return NextResponse.json({ error: "Invalid input", details: validation.errors }, { status: 400 })
+      return NextResponse.json({ error: "Invalid input", details: errors }, { status: 400 })
     }
 
     const sender = validation.data?.sender
