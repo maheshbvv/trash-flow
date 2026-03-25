@@ -1,4 +1,4 @@
-import { z, ZodError } from 'zod'
+import { z } from 'zod'
 
 export const emailSchema = z.object({
   sender: z.string().email().optional(),
@@ -17,20 +17,18 @@ export const scheduleSchema = z.object({
   enabled: z.boolean().optional(),
 })
 
-export function validateEmail(input: unknown) {
+export function validateEmail(input: unknown): { valid: true; data: z.infer<typeof emailSchema> } | { valid: false; errors: unknown[] } {
   const result = emailSchema.safeParse(input)
   if (!result.success) {
-    const error = result.error as ZodError
-    return { valid: false, errors: error.errors }
+    return { valid: false, errors: result.error.issues }
   }
   return { valid: true, data: result.data }
 }
 
-export function validateSchedule(input: unknown) {
+export function validateSchedule(input: unknown): { valid: true; data: z.infer<typeof scheduleSchema> } | { valid: false; errors: unknown[] } {
   const result = scheduleSchema.safeParse(input)
   if (!result.success) {
-    const error = result.error as ZodError
-    return { valid: false, errors: error.errors }
+    return { valid: false, errors: result.error.issues }
   }
   return { valid: true, data: result.data }
 }
