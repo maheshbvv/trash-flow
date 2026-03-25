@@ -46,7 +46,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid input", details: validation.errors }, { status: 400 })
     }
 
-    const { sender, before, after } = validation.data
+    const sender = validation.data.sender
+    const before = validation.data.before
+    const after = validation.data.after
     const { isMarketing } = body
 
     if (!validateDateRange(before, after)) {
