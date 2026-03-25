@@ -2,6 +2,7 @@
 
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useEffect } from 'react'
 import styles from './page.module.css'
 
@@ -107,9 +108,8 @@ export default function Home() {
         <div className="container footer-content">
           <span className="footer-text">© 2026 TrashFlow. All rights reserved.</span>
           <div className="footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Security Audit</a>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
           </div>
         </div>
       </footer>
