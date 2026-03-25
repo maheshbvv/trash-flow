@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Curator | Gmail Bulk Trash</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-fixed-dim": "#ffb4a9",
+                        "on-primary-fixed-variant": "#004493",
+                        "on-tertiary-fixed-variant": "#930004",
+                        "surface-container-low": "#f2f4f5",
+                        "surface-tint": "#005bc0",
+                        "primary-fixed-dim": "#adc7ff",
+                        "inverse-primary": "#adc7ff",
+                        "surface-container": "#eceeef",
+                        "outline-variant": "#c1c6d6",
+                        "on-surface": "#191c1d",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#df3429",
+                        "tertiary": "#bb1712",
+                        "surface-dim": "#d8dadb",
+                        "on-surface-variant": "#414754",
+                        "tertiary-fixed": "#ffdad5",
+                        "inverse-on-surface": "#eff1f2",
+                        "on-primary-fixed": "#001a41",
+                        "primary-container": "#1a73e8",
+                        "on-secondary-fixed-variant": "#43474c",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#ffffff",
+                        "secondary-fixed": "#dfe3e8",
+                        "on-tertiary-fixed": "#410001",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#c3c7cc",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#dde0e6",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary": "#5b5f64",
+                        "surface-bright": "#f8fafb",
+                        "outline": "#727785",
+                        "on-secondary-fixed": "#181c20",
+                        "inverse-surface": "#2e3132",
+                        "on-background": "#191c1d",
+                        "on-secondary-container": "#5f6368",
+                        "primary": "#005bbf",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "background": "#f8fafb",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#ffffff",
+                        "surface-container-high": "#e6e8e9"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col antialiased">
+<!-- Top Navigation Bar (Shared Component) -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/20 dark:border-slate-800/20 shadow-sm">
+<div class="flex justify-between items-center px-6 h-16 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-blue-700 dark:text-blue-400">Digital Curator</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-blue-700 dark:text-blue-400 font-semibold transition-all duration-200 active:scale-95" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-1 rounded-lg" href="#">History</a>
+<a class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-1 rounded-lg" href="#">Rules</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors material-symbols-outlined" data-icon="notifications">notifications</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors material-symbols-outlined" data-icon="settings">settings</button>
+<div class="h-8 w-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant">
+<img alt="User profile and sign out" data-alt="professional portrait of a user in a clean studio setting with soft lighting and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlbHU0HImYDMUhdMDLr2GaWipXuFJQ9casF2y90hbJpOQcBcbMgiFLeQGJ0tE6yoreEvczIE3iHAS6OZk9Q1pBhRINxcZ-x7W_pDDEnQElqrFbDm6k1aN_3_zS_srrKBB05XYdS7WKZoMBv9JGKlb2pF615Dr0bxAbmJskQu4n99U6tH80uunXcKobFpnrfqcm3ClFUHKyRFRgCoGbv_CGf-WZQoWrB5bibkq1hd98uIb8N5gawLPNWCHsBHUlCiZf2OazZSlLGV0"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-16 h-full">
+<!-- Side Navigation Bar (Shared Component) -->
+<aside class="h-screen w-64 hidden md:flex flex-col border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 sticky top-16">
+<div class="flex flex-col p-4 gap-2">
+<div class="mb-6 px-2">
+<h2 class="text-lg font-black text-blue-700">Email Curator</h2>
+<p class="text-xs text-slate-500">Precision Trashing</p>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_delete" style="font-variation-settings: 'FILL' 1;">auto_delete</span>
+<span class="text-sm font-medium">Trash Rules</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-sm font-medium">History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<div class="mt-8 px-2">
+<button class="w-full py-3 bg-primary text-on-primary rounded-full font-bold shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        New Cleanup
+                    </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 bg-surface-container-low p-8 md:p-12 overflow-y-auto">
+<div class="max-w-4xl mx-auto">
+<!-- Success Banner (Conditional Display Simulation) -->
+<div class="mb-8 flex items-center gap-4 p-4 bg-primary-fixed text-on-primary-fixed rounded-xl border border-primary/10 shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-bold">Successfully trashed 361 emails</p>
+<p class="text-sm opacity-80">Bulk deletion operation completed for 'newsletters@marketing.com'</p>
+</div>
+</div>
+<!-- Page Header -->
+<div class="mb-12">
+<h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">Bulk Trash Emails</h1>
+<p class="text-lg text-on-surface-variant max-w-2xl leading-relaxed">
+                        Effortlessly declutter your workspace by purging thousands of unwanted messages from specific senders or timeframes with surgical precision.
+                    </p>
+</div>
+<!-- Trust Banner -->
+<div class="mb-10 p-6 bg-tertiary-fixed text-on-tertiary-fixed rounded-2xl flex items-start gap-4">
+<span class="material-symbols-outlined text-tertiary mt-1" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<h3 class="text-xl font-bold mb-1">Important Safety Notice</h3>
+<p class="text-sm leading-relaxed opacity-90">
+                            Emails moved to Trash will be <strong>permanently deleted by Google after 30 days</strong>. This action is bulk-processed and cannot be undone once the trash is emptied. Please verify your search criteria before executing.
+                        </p>
+</div>
+</div>
+<!-- Tool Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-8 md:p-10 shadow-sm border border-outline-variant/10">
+<div class="grid grid-cols-1 gap-8">
+<!-- From Input -->
+<div class="space-y-2">
+<label class="block text-sm font-bold text-on-surface-variant ml-1">From (Sender Email)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/50" data-icon="mail">mail</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high rounded-xl border-none focus:ring-2 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-on-surface-variant/40 font-medium" placeholder="example@newsletter.com" type="email"/>
+</div>
+</div>
+<!-- Date Range Group -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-sm font-bold text-on-surface-variant ml-1">Date From (Optional)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/50" data-icon="calendar_today">calendar_today</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high rounded-xl border-none focus:ring-2 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface font-medium" type="date"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold text-on-surface-variant ml-1">Date To (Optional)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/50" data-icon="event">event</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high rounded-xl border-none focus:ring-2 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface font-medium" type="date"/>
+</div>
+</div>
+</div>
+<!-- CTA Section -->
+<div class="pt-4 border-t border-outline-variant/10 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="info">info</span>
+<span class="text-xs font-medium">Scan results will appear below before final confirmation</span>
+</div>
+<button class="w-full md:w-auto px-10 py-4 bg-primary text-on-primary rounded-full font-bold shadow-md hover:shadow-xl hover:bg-primary-container transition-all active:scale-95 flex items-center justify-center gap-3">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+                                Check Email Count
+                            </button>
+</div>
+</div>
+</div>
+<!-- Informational Bento Grid -->
+<div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container p-6 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-4 block" data-icon="speed">speed</span>
+<h4 class="font-bold mb-2">High-Speed Processing</h4>
+<p class="text-sm text-on-surface-variant">Process up to 5,000 emails per batch using our optimized API connection.</p>
+</div>
+<div class="bg-surface-container p-6 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-4 block" data-icon="security">security</span>
+<h4 class="font-bold mb-2">Privacy First</h4>
+<p class="text-sm text-on-surface-variant">We never store your email content. Metadata is processed in real-time and discarded.</p>
+</div>
+<div class="bg-surface-container p-6 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-4 block" data-icon="analytics">analytics</span>
+<h4 class="font-bold mb-2">Smart Analysis</h4>
+<p class="text-sm text-on-surface-variant">Identify attachment-heavy emails and recurring promotional senders automatically.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer (Shared Component) -->
+<footer class="w-full py-8 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<span class="text-xs text-slate-500 dark:text-slate-500 font-normal">© 2024 Digital Curator. Precision Data Preservation.</span>
+<div class="flex gap-6">
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity hover:opacity-80" href="#">Privacy Policy</a>
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity hover:opacity-80" href="#">Terms of Service</a>
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity hover:opacity-80" href="#">Security Audit</a>
+</div>
+</div>
+</footer>
+</body></html>

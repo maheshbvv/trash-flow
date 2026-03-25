@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cleanup History - Digital Curator</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "secondary": "#5b5f64",
+                "primary-fixed": "#d8e2ff",
+                "error": "#ba1a1a",
+                "on-primary-fixed-variant": "#004493",
+                "tertiary-fixed-dim": "#ffb4a9",
+                "on-secondary": "#ffffff",
+                "on-tertiary-fixed": "#410001",
+                "primary-fixed-dim": "#adc7ff",
+                "surface": "#f8fafb",
+                "secondary-fixed-dim": "#c3c7cc",
+                "on-primary": "#ffffff",
+                "surface-bright": "#f8fafb",
+                "outline-variant": "#c1c6d6",
+                "on-surface-variant": "#414754",
+                "outline": "#727785",
+                "on-primary-container": "#ffffff",
+                "tertiary-container": "#df3429",
+                "on-primary-fixed": "#001a41",
+                "primary-container": "#1a73e8",
+                "inverse-on-surface": "#eff1f2",
+                "on-background": "#191c1d",
+                "surface-dim": "#d8dadb",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#e6e8e9",
+                "on-surface": "#191c1d",
+                "tertiary-fixed": "#ffdad5",
+                "surface-container-low": "#f2f4f5",
+                "secondary-fixed": "#dfe3e8",
+                "on-error": "#ffffff",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#005bc0",
+                "secondary-container": "#dde0e6",
+                "on-secondary-container": "#5f6368",
+                "inverse-surface": "#2e3132",
+                "on-secondary-fixed-variant": "#43474c",
+                "surface-container-highest": "#e1e3e4",
+                "primary": "#005bbf",
+                "surface-variant": "#e1e3e4",
+                "on-secondary-fixed": "#181c20",
+                "background": "#f8fafb",
+                "inverse-primary": "#adc7ff",
+                "tertiary": "#bb1712",
+                "error-container": "#ffdad6",
+                "on-error-container": "#93000a",
+                "surface-container": "#eceeef",
+                "on-tertiary-fixed-variant": "#930004",
+                "on-tertiary-container": "#ffffff"
+              },
+              fontFamily: {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/20 dark:border-slate-800/20 shadow-sm flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-blue-700 dark:text-blue-400">Digital Curator</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-2 rounded-lg" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-2 rounded-lg" href="#">Trash Rules</a>
+<a class="text-blue-700 dark:text-blue-400 font-semibold px-3 py-2 rounded-lg" href="#">History</a>
+<a class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-2 rounded-lg" href="#">Settings</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant/20">
+<img alt="User profile and sign out" data-alt="close-up portrait of a professional man with a neutral expression against a clean studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrhMXwhxYslpVHkELTuSBMxqhQLwUxaaoTX9sR2EBMXCANLZRGJgxW-fE4Cmug1LoYEE0D84V9TXB4P72_OX5yqwihWP7iIWeiPo_ajyQbKVlcewPlP3kISKKKJfB14l5aDC3uQmQz6bA0ogKy_wB_BuSHOSMZZK5GuwP0SmpBc6sqbnPmC_AdMAbpZ4tSaTUWp9sL-efaXmERKUzo5ggZ4TqM-524FP7O4dJmrIGPnkWEaqX3qdGsMdMCWHF-M84lGXkNCQzxYs4"/>
+</div>
+</div>
+</nav>
+<div class="flex min-h-screen pt-16">
+<!-- SideNavBar -->
+<aside class="h-[calc(100vh-4rem)] w-64 hidden md:flex flex-col border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 gap-2 sticky top-16">
+<div class="mb-6 px-2">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="auto_delete">auto_delete</span>
+</div>
+<span class="text-lg font-black text-blue-700">Email Curator</span>
+</div>
+<span class="text-xs text-secondary font-medium uppercase tracking-wider">Precision Trashing</span>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="auto_delete">auto_delete</span>
+<span class="text-sm font-medium">Trash Rules</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-sm font-medium">History</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<button class="mt-auto w-full bg-primary hover:bg-primary-container text-white py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Cleanup
+            </button>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-surface p-8 md:p-12">
+<div class="max-w-6xl mx-auto">
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h1 class="text-4xl font-extrabold text-on-surface tracking-tight mb-2">Operation History</h1>
+<p class="text-on-surface-variant max-w-lg text-lg">A detailed log of all automated and manual cleanup operations performed by Digital Curator.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold rounded-full transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-xl" data-icon="filter_list">filter_list</span>
+                            Filter
+                        </button>
+<button class="px-6 py-2.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold rounded-full transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-xl" data-icon="download">download</span>
+                            Export
+                        </button>
+</div>
+</header>
+<!-- Stats Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="bg-surface-container-low p-6 rounded-xl">
+<span class="text-secondary text-sm font-semibold uppercase tracking-widest mb-1 block">Total Freed</span>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold text-primary">12.4 GB</span>
+<span class="text-on-surface-variant text-sm">this month</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl">
+<span class="text-secondary text-sm font-semibold uppercase tracking-widest mb-1 block">Cleanup Count</span>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold text-on-surface">142</span>
+<span class="text-on-surface-variant text-sm">operations</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl">
+<span class="text-secondary text-sm font-semibold uppercase tracking-widest mb-1 block">Efficiency</span>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold text-on-surface">99.2%</span>
+<span class="text-on-surface-variant text-sm">success rate</span>
+</div>
+</div>
+</div>
+<!-- History Table Container -->
+<div class="bg-surface-container-low rounded-2xl overflow-hidden border border-outline-variant/10 shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50">
+<th class="px-6 py-5 text-sm font-bold text-secondary uppercase tracking-widest">Date &amp; Time</th>
+<th class="px-6 py-5 text-sm font-bold text-secondary uppercase tracking-widest">Sender / Criteria</th>
+<th class="px-6 py-5 text-sm font-bold text-secondary uppercase tracking-widest">Count</th>
+<th class="px-6 py-5 text-sm font-bold text-secondary uppercase tracking-widest">Status</th>
+<th class="px-6 py-5 text-sm font-bold text-secondary uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Oct 24, 2024</span>
+<span class="text-xs text-on-surface-variant">14:22 PM</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="alternate_email">alternate_email</span>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">promotions@marketing.com</span>
+<span class="text-xs text-on-surface-variant">Rule: Weekly Bulk Purge</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-secondary-container text-on-secondary-container">
+                                            1,248 items
+                                        </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-bold">Success</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-fixed/20 rounded-lg transition-all" title="View Details">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all" title="Undo Operation">
+<span class="material-symbols-outlined" data-icon="undo">undo</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Oct 23, 2024</span>
+<span class="text-xs text-on-surface-variant">09:15 AM</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed/30 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="folder_zip">folder_zip</span>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Attachments &gt; 25MB</span>
+<span class="text-xs text-on-surface-variant">Manual: Space Recovery</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-secondary-container text-on-secondary-container">
+                                            42 items
+                                        </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-bold">Success</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-fixed/20 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="undo">undo</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Oct 22, 2024</span>
+<span class="text-xs text-on-surface-variant">23:01 PM</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container/30 flex items-center justify-center text-error">
+<span class="material-symbols-outlined" data-icon="sync_problem">sync_problem</span>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">noreply@system-alerts.io</span>
+<span class="text-xs text-on-surface-variant">Rule: Daily Maintenance</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-secondary-container text-on-secondary-container">
+                                            0 items
+                                        </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-lg" data-icon="error" style="font-variation-settings: 'FILL' 1;">error</span>
+<span class="text-sm font-bold">Failed</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-fixed/20 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant cursor-not-allowed opacity-30 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="undo">undo</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Oct 21, 2024</span>
+<span class="text-xs text-on-surface-variant">11:45 AM</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="delete_sweep">delete_sweep</span>
+</div>
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Social Media Updates</span>
+<span class="text-xs text-on-surface-variant">Rule: 30-Day Old Notifications</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-secondary-container text-on-secondary-container">
+                                            3,110 items
+                                        </span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-bold">Success</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-fixed/20 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="undo">undo</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="bg-surface-container-high/20 px-6 py-4 flex items-center justify-between border-t border-outline-variant/10">
+<span class="text-sm text-on-surface-variant">Showing 4 of 142 operations</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold text-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-sm">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Warning Banner -->
+<div class="mt-12 p-6 bg-tertiary-fixed text-on-tertiary-fixed rounded-2xl flex items-start gap-4">
+<span class="material-symbols-outlined text-3xl text-tertiary" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<h4 class="text-xl font-extrabold tracking-tight mb-1">Undo Policy Notice</h4>
+<p class="text-sm leading-relaxed opacity-90">Cleanup operations can be undone within 48 hours of execution. After this window, data is permanently purged from the curator's local recovery buffer to maintain your privacy and free up workspace memory.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-8 mt-auto border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<span class="text-xs text-slate-500 dark:text-slate-500 font-normal">© 2024 Digital Curator. Precision Data Preservation.</span>
+<div class="flex gap-6">
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity hover:opacity-80" href="#">Privacy Policy</a>
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity hover:opacity-80" href="#">Terms of Service</a>
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity hover:opacity-80" href="#">Security Audit</a>
+</div>
+</div>
+</footer>
+</body></html>

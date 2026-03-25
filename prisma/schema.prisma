@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  name          String?
+  createdAt     DateTime     @default(now())
+  isPaid        Boolean      @default(false)
+  operations    Operation[]
+  schedules     Schedule[]
+}
+
+model Operation {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // "search" or "delete"
+  filters     String   // JSON string of filters used
+  emailCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Schedule {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  fromEmail   String?
+  dateFrom    String?
+  dateTo      String?
+  isMarketing Boolean  @default(false)
+  frequency   String   // "daily", "weekly", "monthly"
+  isActive    Boolean  @default(true)
+  lastRunAt   DateTime?
+  createdAt   DateTime @default(now())
+}

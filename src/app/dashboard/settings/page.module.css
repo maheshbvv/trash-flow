@@ -1,0 +1,389 @@
+.container {
+  max-width: 900px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--on-surface-variant);
+}
+
+/* Header */
+.header {
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--on-surface);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--on-surface-variant);
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* Section */
+.section {
+  margin-bottom: 48px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sectionIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--primary-fixed);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+/* Account Card */
+.accountCard {
+  background: var(--surface-container-low);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.accountInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatarWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  color: #EA4335;
+}
+
+.accountLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.accountEmail {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin-top: 4px;
+}
+
+.accountMeta {
+  font-size: 14px;
+  color: var(--secondary);
+  margin-top: 4px;
+}
+
+.switchBtn {
+  padding: 10px 24px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 9999px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: background 0.2s;
+  align-self: flex-start;
+}
+
+.switchBtn:hover {
+  background: var(--surface-container-high);
+}
+
+/* Form */
+.formCard {
+  background: var(--surface-container-lowest);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+/* Add Schedule Button */
+.addScheduleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addScheduleBtn:hover {
+  opacity: 0.95;
+  transform: scale(0.98);
+}
+
+/* Schedule List */
+.scheduleList {
+  background: var(--surface-container-low);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.scheduleItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(193, 198, 214, 0.1);
+}
+
+.scheduleItem:last-child {
+  border-bottom: none;
+}
+
+.scheduleIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-fixed);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scheduleContent {
+  flex: 1;
+}
+
+.scheduleName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.scheduleMeta {
+  font-size: 13px;
+  color: var(--secondary);
+  margin-top: 2px;
+}
+
+.deleteBtn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background: var(--error-container);
+  color: var(--error);
+}
+
+/* Toggle Cards */
+.toggleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.toggleCard {
+  background: var(--surface-container-lowest);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border: 1px solid rgba(193, 198, 214, 0.1);
+}
+
+.toggleTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin-bottom: 4px;
+}
+
+.toggleDesc {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+}
+
+.toggle {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  width: 44px;
+  height: 24px;
+  background: var(--surface-container-high);
+  border-radius: 12px;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.toggleSlider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggle input:checked + .toggleSlider {
+  background: var(--primary);
+}
+
+.toggle input:checked + .toggleSlider::after {
+  transform: translateX(20px);
+}
+
+/* Danger Zone */
+.dangerZone {
+  background: var(--tertiary-fixed);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid var(--tertiary);
+}
+
+.dangerHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  color: var(--tertiary);
+}
+
+.dangerHeader h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--on-tertiary-fixed);
+}
+
+.dangerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dangerTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--on-tertiary-fixed);
+}
+
+.dangerDesc {
+  font-size: 13px;
+  color: var(--on-tertiary-fixed);
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.dangerBtn {
+  padding: 12px 32px;
+  background: var(--tertiary);
+  color: var(--on-tertiary);
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dangerBtn:hover {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .toggleGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .dangerContent {
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+    align-items: flex-start;
+  }
+}

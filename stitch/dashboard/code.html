@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Curator - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary": "#5b5f64",
+              "primary-fixed": "#d8e2ff",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#004493",
+              "tertiary-fixed-dim": "#ffb4a9",
+              "on-secondary": "#ffffff",
+              "on-tertiary-fixed": "#410001",
+              "primary-fixed-dim": "#adc7ff",
+              "surface": "#f8fafb",
+              "secondary-fixed-dim": "#c3c7cc",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f8fafb",
+              "outline-variant": "#c1c6d6",
+              "on-surface-variant": "#414754",
+              "outline": "#727785",
+              "on-primary-container": "#ffffff",
+              "tertiary-container": "#df3429",
+              "on-primary-fixed": "#001a41",
+              "primary-container": "#1a73e8",
+              "inverse-on-surface": "#eff1f2",
+              "on-background": "#191c1d",
+              "surface-dim": "#d8dadb",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e6e8e9",
+              "on-surface": "#191c1d",
+              "tertiary-fixed": "#ffdad5",
+              "surface-container-low": "#f2f4f5",
+              "secondary-fixed": "#dfe3e8",
+              "on-error": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-tint": "#005bc0",
+              "secondary-container": "#dde0e6",
+              "on-secondary-container": "#5f6368",
+              "inverse-surface": "#2e3132",
+              "on-secondary-fixed-variant": "#43474c",
+              "surface-container-highest": "#e1e3e4",
+              "primary": "#005bbf",
+              "surface-variant": "#e1e3e4",
+              "on-secondary-fixed": "#181c20",
+              "background": "#f8fafb",
+              "inverse-primary": "#adc7ff",
+              "tertiary": "#bb1712",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "surface-container": "#eceeef",
+              "on-tertiary-fixed-variant": "#930004",
+              "on-tertiary-container": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 hidden md:flex flex-col border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 sticky top-0">
+<div class="flex flex-col p-6 gap-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined" data-icon="auto_delete">auto_delete</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-blue-700 leading-none">Email Curator</h2>
+<p class="text-[10px] uppercase tracking-widest text-secondary mt-1">Precision Trashing</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_delete">auto_delete</span>
+<span class="text-sm font-medium">Trash Rules</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-sm font-medium">History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<button class="mt-4 w-full bg-gradient-to-br from-primary to-primary-container text-white py-3 px-4 rounded-full font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Cleanup
+            </button>
+</div>
+<div class="mt-auto p-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border-2 border-primary-fixed" data-alt="portrait of a professional man in a clean office setting, soft natural lighting, high-end editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCcYPxFnz8ZRgf5VKc_qPQgT-FD1BzdAJOzktQ-dquWM5Gwi-a53P9iYx4FiCSVvYUUbK6fjP99QAuQlUbJcXWJwjtkWUOJbTuMke6D6X5ug627HIgoRys9prk2ABfnzsyisE2ctDVRI4CBs6hNV3GV8uaDZwzJbEX3FBoOT2eekQhnk_Np-VeXSuAaQR_4_qgrMLeyugrD2aCH2ZLWeT5I-YEQPnqhiuPbZedBywV-3TzUNxVOyQKPQyVwRL7dgpw8bQSf6eCzD8"/>
+<div>
+<p class="text-sm font-bold truncate">Alex Curator</p>
+<p class="text-xs text-secondary truncate">Pro Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-0 md:left-64 z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/20 dark:border-slate-800/20 shadow-sm h-16 flex items-center justify-between px-8">
+<h1 class="text-xl font-bold tracking-tight text-blue-700 dark:text-blue-400">Digital Curator</h1>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container overflow-hidden">
+<img alt="User profile and sign out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpU7Xqw8zxom3I5-eAQA-x36H97VnoNV_xZdyf1vCfcBVcZXZZVCORm1pVFtkVexK3aWh8mHADby3WssF1fGXcUuFKcfdvjJwbK-u3n3CdqZuJCvHNUR6e7CQeskHdiIFA6N70mSIhc5OucgUjNAmBcsaKB7vrZz66FEo6Lq_KDfjw4qAnvnBpzFDCSsb5j-tl3e1zWlcfpWf0iA3lyxsYKpXJNpaWcf_IqdcKPDit9qRv7b3pgLSbKp5LdXx4fDYHmfXud2dEcJU"/>
+</div>
+</div>
+</header>
+<div class="pt-24 px-8 pb-12 max-w-7xl w-full mx-auto">
+<!-- Hero Stats / Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- Main Metric -->
+<div class="md:col-span-6 bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group border border-transparent hover:border-primary-fixed transition-all duration-300">
+<div class="z-10">
+<p class="text-sm font-medium text-secondary mb-2 uppercase tracking-widest">Efficiency Rating</p>
+<h3 class="text-5xl font-black text-on-surface mb-4">98.4%</h3>
+<p class="text-body-md text-on-surface-variant max-w-xs">Your workspace is currently maintained at peak editorial standards.</p>
+</div>
+<div class="mt-8 flex items-center gap-4 z-10">
+<div class="h-2 w-32 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[98.4%]"></div>
+</div>
+<span class="text-xs font-bold text-primary">OPTIMIZED</span>
+</div>
+<!-- Decorative element -->
+<div class="absolute -right-12 -bottom-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+</div>
+<!-- Metric Card 1 -->
+<div class="md:col-span-3 bg-surface-container-low p-6 rounded-xl flex flex-col justify-between border border-transparent">
+<div>
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary mb-4">
+<span class="material-symbols-outlined" data-icon="delete_sweep">delete_sweep</span>
+</div>
+<p class="text-xs font-bold text-secondary uppercase tracking-tighter">Total Emails Trashed</p>
+<h4 class="text-3xl font-bold mt-1">42,891</h4>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-4">+1,202 this week</p>
+</div>
+<!-- Metric Card 2 -->
+<div class="md:col-span-3 bg-surface-container-low p-6 rounded-xl flex flex-col justify-between border border-transparent">
+<div>
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
+<span class="material-symbols-outlined" data-icon="hard_drive">hard_drive</span>
+</div>
+<p class="text-xs font-bold text-secondary uppercase tracking-tighter">Storage Reclaimed</p>
+<h4 class="text-3xl font-bold mt-1">14.2 GB</h4>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-4">Equivalent to 4,500 HD photos</p>
+</div>
+<!-- Metric Card 3 (Active Rules) -->
+<div class="md:col-span-4 bg-surface-container-low p-6 rounded-xl flex items-center justify-between border border-transparent">
+<div>
+<p class="text-xs font-bold text-secondary uppercase tracking-tighter">Active Rules</p>
+<h4 class="text-4xl font-bold mt-1 text-on-surface">12</h4>
+</div>
+<div class="flex -space-x-3">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center border-2 border-white"><span class="material-symbols-outlined text-xs" data-icon="mail">mail</span></div>
+<div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center border-2 border-white"><span class="material-symbols-outlined text-xs" data-icon="campaign">campaign</span></div>
+<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border-2 border-white"><span class="material-symbols-outlined text-xs" data-icon="receipt">receipt</span></div>
+<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center border-2 border-white text-[10px] font-bold">+9</div>
+</div>
+</div>
+<!-- Visualization Placeholder -->
+<div class="md:col-span-8 bg-surface-container-lowest p-6 rounded-xl border border-transparent flex items-center justify-between">
+<div class="flex-1">
+<p class="text-xs font-bold text-secondary uppercase tracking-tighter mb-4">Volume Over Time</p>
+<div class="flex items-end gap-2 h-24">
+<div class="w-full bg-primary-fixed-dim rounded-t h-[40%]"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t h-[60%]"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t h-[35%]"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t h-[80%]"></div>
+<div class="w-full bg-primary rounded-t h-[95%]"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t h-[55%]"></div>
+<div class="w-full bg-primary-fixed-dim rounded-t h-[30%]"></div>
+</div>
+</div>
+<div class="ml-12 pl-12 border-l border-outline-variant/10 text-right">
+<p class="text-xs text-secondary">Peak Cleanup Day</p>
+<p class="text-lg font-bold">Tuesday</p>
+<p class="text-[10px] text-on-surface-variant">Avg. 450 items/batch</p>
+</div>
+</div>
+</div>
+<!-- Recent Activity -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-on-surface">Recent Activity</h2>
+<button class="text-xs font-bold text-primary hover:underline">View History</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden">
+<div class="grid grid-cols-12 gap-4 px-8 py-4 bg-surface-container-high/30 text-[10px] font-bold uppercase tracking-widest text-secondary">
+<div class="col-span-4">Operation</div>
+<div class="col-span-2">Source</div>
+<div class="col-span-2">Items</div>
+<div class="col-span-2">Reduction</div>
+<div class="col-span-2 text-right">Status</div>
+</div>
+<!-- Activity Items -->
+<div class="divide-y divide-outline-variant/5">
+<!-- Row 1 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-surface-container-low transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="mark_email_unread">mark_email_unread</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Newsletter Purge</p>
+<p class="text-xs text-secondary">Auto-cleanup rule #4</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">Marketing Tab</div>
+<div class="col-span-2 text-sm font-medium">1,204</div>
+<div class="col-span-2 text-sm font-bold text-primary">452 MB</div>
+<div class="col-span-2 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">COMPLETED</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-surface-container-low transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Spam Destructor</p>
+<p class="text-xs text-secondary">Manual Execution</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">Junk Mail</div>
+<div class="col-span-2 text-sm font-medium">8,442</div>
+<div class="col-span-2 text-sm font-bold text-primary">1.2 GB</div>
+<div class="col-span-2 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">COMPLETED</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-surface-container-low transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="attachment">attachment</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Large Attachment Clear</p>
+<p class="text-xs text-secondary">Files &gt; 25MB</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">All Mail</div>
+<div class="col-span-2 text-sm font-medium">142</div>
+<div class="col-span-2 text-sm font-bold text-primary">8.4 GB</div>
+<div class="col-span-2 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">COMPLETED</span>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-surface-container-low transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Archive Old Receipts</p>
+<p class="text-xs text-secondary">Dates older than 2022</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">Finance</div>
+<div class="col-span-2 text-sm font-medium">3,110</div>
+<div class="col-span-2 text-sm font-bold text-primary">210 MB</div>
+<div class="col-span-2 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">ARCHIVING</span>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-surface-container-low transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="folder_delete">folder_delete</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Promotions Sweep</p>
+<p class="text-xs text-secondary">Weekly recurrence</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">Promotions</div>
+<div class="col-span-2 text-sm font-medium">554</div>
+<div class="col-span-2 text-sm font-bold text-primary">88 MB</div>
+<div class="col-span-2 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">COMPLETED</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<footer class="w-full py-8 mt-auto border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto w-full gap-4">
+<p class="text-xs text-slate-500 dark:text-slate-500 font-normal">© 2024 Digital Curator. Precision Data Preservation.</p>
+<div class="flex gap-6">
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity transition-colors" href="#">Terms of Service</a>
+<a class="text-xs text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity transition-colors" href="#">Security Audit</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- FAB for Mobile -->
+<button class="md:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center active:scale-90 transition-transform z-[100]">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</body></html>
