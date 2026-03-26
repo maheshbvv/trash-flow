@@ -132,14 +132,6 @@ export default function Landing() {
   }, [session, router])
 
   useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://pendura.kit.com/7aa23f5a1a/index.js'
-    script.async = true
-    script.setAttribute('data-uid', '7aa23f5a1a')
-    document.body.appendChild(script)
-  }, [])
-
-  useEffect(() => {
     const el = heroRef.current
     if (!el) return
 
@@ -365,7 +357,7 @@ export default function Landing() {
           <div className="container">
             <AnimatedSection>
               <div className={styles.newsletter}>
-                <div className={styles.newsletterForm} data-uid="7aa23f5a1a"></div>
+                <script async data-uid="7aa23f5a1a" data-format="inline" />
               </div>
             </AnimatedSection>
           </div>
