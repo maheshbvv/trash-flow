@@ -3,7 +3,7 @@
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './layout.module.css'
 
 export default function DashboardLayout({
@@ -14,12 +14,17 @@ export default function DashboardLayout({
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/')
     }
   }, [status, router])
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   if (status === 'loading') {
     return (
@@ -43,7 +48,33 @@ export default function DashboardLayout({
 
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar}>
+      {/* Mobile Header */}
+      <header className={styles.mobileHeader}>
+        <button 
+          className={styles.menuBtn} 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span className="material-symbols-outlined">
+            {mobileMenuOpen ? 'close' : 'menu'}
+          </span>
+        </button>
+        <div className={styles.mobileLogo}>
+          <span className="material-symbols-outlined">auto_delete</span>
+          TrashFlow
+        </div>
+        <div className={styles.mobileSpacer}></div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className={styles.overlay} 
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      <aside className={`${styles.sidebar} ${mobileMenuOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarTop}>
           <div className={styles.logoSection}>
             <div className={styles.logoIcon}>
