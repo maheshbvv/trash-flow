@@ -102,7 +102,7 @@ export default function Home() {
               <div className={styles.priceCard}>
                 <h3>Free Trial</h3>
                 <p className={styles.price}>₹0</p>
-                <p>100 deletions</p>
+                <p>500 deletions</p>
               </div>
               <div className={styles.priceCard}>
                 <h3>Yearly</h3>

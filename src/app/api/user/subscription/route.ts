@@ -53,7 +53,7 @@ export async function GET() {
     }
 
     const limits = {
-      free: { maxDeletions: 100, name: 'Free Trial' },
+      free: { maxDeletions: 500, name: 'Free Trial' },
       yearly: { maxDeletions: -1, name: 'Yearly' },
       lifetime: { maxDeletions: -1, name: 'Lifetime' }
     }

@@ -6,8 +6,24 @@ import Providers from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TrashFlow - Bulk Delete Gmail Emails",
-  description: "Bulk delete emails from specific senders or date ranges. Clean your Gmail inbox in seconds.",
+  title: "TrashFlow - Bulk Delete Gmail Emails | Clean Inbox Fast",
+  description: "TrashFlow helps you bulk delete Gmail emails from specific senders or date ranges. Clean your cluttered Gmail inbox in seconds. Free trial available.",
+  keywords: "bulk delete gmail, delete emails, clean gmail inbox, gmail cleanup, bulk email deletion, email management",
+  openGraph: {
+    title: "TrashFlow - Bulk Delete Gmail Emails",
+    description: "Bulk delete emails from specific senders or date ranges. Clean your Gmail inbox in seconds.",
+    type: "website",
+    siteName: "TrashFlow",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TrashFlow - Bulk Delete Gmail Emails",
+    description: "Bulk delete emails from specific senders or date ranges. Clean your Gmail inbox in seconds.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: '/trashflow-icon.svg',
   },
