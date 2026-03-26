@@ -1,22 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
+import { getToken } from "next-auth/jwt"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-
-// Handle webhook test (GET request)
-export async function GET() {
-  return NextResponse.json({ status: "ok", message: "Webhook endpoint active" })
-}
 
 const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID
 const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY
 const CASHFREE_WEBHOOK_SECRET = process.env.CASHFREE_WEBHOOK_SECRET
-const CASHFREE_ENV = 'prod' // process.env.CASHFREE_ENV || 'test'
+const CASHFREE_ENV = 'prod'
 
 interface CashfreePlan {
   id: string
   name: string
-  amount: number // in paise (multiply by 100)
+  amount: number
   description: string
 }
 
@@ -25,16 +20,21 @@ const plans: CashfreePlan[] = [
   { id: 'lifetime', name: 'Lifetime', amount: 300000, description: 'One-time payment' }
 ]
 
+// Handle webhook test (GET request)
+export async function GET() {
+  return NextResponse.json({ status: "ok", message: "Webhook endpoint active" })
+}
+
 export async function POST(req: NextRequest) {
-  // IMPORTANT: Read body BEFORE getServerSession to avoid "body already read" error
-  // Next.js 16 + NextAuth issue: getServerSession makes internal fetch that consumes body
+  // ✅ Read body ONCE as text, parse manually - fixes "body already read" error
   const bodyText = await req.text()
   const body = JSON.parse(bodyText)
   const { planId } = body
 
-  const session = await getServerSession(authOptions)
+  // ✅ Get token from JWT - avoids getServerSession internal fetch issue in Next.js 16
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
   
-  if (!session?.user?.email) {
+  if (!token?.email) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
   }
 
@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
     }
 
     const orderId = `TRASHFLOW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    const orderNote = `TrashFlow ${plan.name} - ${session.user.email}`
-    const customerId = session.user.email.replace(/[^a-zA-Z0-9_-]/g, '_')
+    const orderNote = `TrashFlow ${plan.name} - ${token.email}`
+    const customerId = token.email.replace(/[^a-zA-Z0-9_-]/g, '_')
 
     const apiDomain = CASHFREE_ENV === 'prod' ? 'api.cashfree.com' : 'sandbox.cashfree.com'
 
@@ -89,8 +89,8 @@ export async function POST(req: NextRequest) {
           order_note: orderNote,
           customer_details: {
             customer_id: customerId,
-            customer_name: session.user.name || session.user.email.split('@')[0],
-            customer_email: session.user.email,
+            customer_name: token.name || token.email.split('@')[0],
+            customer_email: token.email,
             customer_phone: '9999999999'
           },
           order_meta: {
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
 
     // Store order ID temporarily for webhook verification
     await prisma.user.update({
-      where: { email: session.user.email },
+      where: { email: token.email },
       data: { lemonsqueezyId: orderId }
     })
 
