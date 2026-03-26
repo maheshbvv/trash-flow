@@ -159,11 +159,14 @@ export default function Landing() {
 
       <header className="header">
         <div className="container header-content">
-          <div className="logo">
-            <svg className="logo-icon" viewBox="0 0 24 24" fill="none">
-              <path d="M19 4H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 8l7 5 7-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            TrashFlow
+          <div className={styles.logoSection}>
+            <div className={styles.logoIcon}>
+              <span className="material-symbols-outlined">auto_delete</span>
+            </div>
+            <div>
+              <div className={styles.logoText}>TrashFlow</div>
+              <div className={styles.logoSubtext}>Precision Trashing</div>
+            </div>
           </div>
           <nav className={styles.nav}>
             <Link href="#features">Features</Link>
@@ -365,13 +368,15 @@ export default function Landing() {
       <footer className="footer">
         <div className="container footer-content">
           <div className={styles.footerBrand}>
-            <div className="logo">
-              <svg className="logo-icon" viewBox="0 0 24 24" fill="none">
-                <path d="M19 4H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 8l7 5 7-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              TrashFlow
+            <div className={styles.logoSection}>
+              <div className={styles.logoIcon}>
+                <span className="material-symbols-outlined">auto_delete</span>
+              </div>
+              <div>
+                <div className={styles.logoText}>TrashFlow</div>
+                <div className={styles.logoSubtext}>Precision Trashing</div>
+              </div>
             </div>
-            <p className={styles.footerTagline}>Clean your Gmail inbox in seconds</p>
           </div>
           <div className={styles.footerLinks}>
             <div className={styles.footerColumn}>

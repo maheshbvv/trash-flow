@@ -430,12 +430,6 @@
   margin-bottom: 32px;
 }
 
-.footerTagline {
-  font-size: 14px;
-  color: var(--on-surface-variant);
-  margin-top: 8px;
-}
-
 .footerLinks {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -540,4 +534,42 @@
   .ctaCard h2 {
     font-size: 28px;
   }
+}
+
+/* Logo Styles */
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 91, 191, 0.3);
+}
+
+.logoIcon .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+
+.logoSubtext {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--secondary);
+  margin-top: 2px;
 }
