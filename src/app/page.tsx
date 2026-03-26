@@ -364,8 +364,8 @@ export default function Landing() {
         <section className={styles.newsletter}>
           <div className="container">
             <AnimatedSection>
-              <div className={styles.newsletterKit}>
-                <div className="formkit-inline-form" data-uid="7aa23f5a1a"></div>
+              <div className={styles.newsletter}>
+                <div className={styles.newsletterForm} data-uid="7aa23f5a1a"></div>
               </div>
             </AnimatedSection>
           </div>

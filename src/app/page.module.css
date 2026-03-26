@@ -418,15 +418,9 @@
   justify-content: center;
 }
 
-.newsletterKit {
+.newsletterForm {
   width: 100%;
   max-width: 500px;
-}
-
-.newsletterKit > div {
-  width: 100% !important;
-  max-width: 500px !important;
-  margin: 0 auto !important;
 }
 
 /* Footer */

@@ -40,7 +40,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-        <script async data-uid="7aa23f5a1a" src="https://pendura.kit.com/7aa23f5a1a/index.js"></script>
       </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>
