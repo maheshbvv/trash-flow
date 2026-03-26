@@ -132,6 +132,14 @@ export default function Landing() {
   }, [session, router])
 
   useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://pendura.kit.com/7aa23f5a1a/index.js'
+    script.async = true
+    script.setAttribute('data-uid', '7aa23f5a1a')
+    document.body.appendChild(script)
+  }, [])
+
+  useEffect(() => {
     const el = heroRef.current
     if (!el) return
 
@@ -176,7 +184,6 @@ export default function Landing() {
       </header>
 
       <main>
-        {/* Hero Section */}
         <section className={styles.hero} ref={heroRef}>
           <div className="container">
             <AnimatedSection>
@@ -236,7 +243,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Features Section */}
         <section id="features" className={styles.features}>
           <div className="container">
             <AnimatedSection>
@@ -262,7 +268,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* How It Works */}
         <section className={styles.howItWorks}>
           <div className="container">
             <AnimatedSection>
@@ -300,7 +305,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Pricing Section */}
         <section id="pricing" className={styles.pricing}>
           <div className="container">
             <AnimatedSection>
@@ -343,7 +347,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* CTA Section */}
         <section className={styles.cta}>
           <div className="container">
             <AnimatedSection>
@@ -358,7 +361,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Newsletter Section */}
         <section className={styles.newsletter}>
           <div className="container">
             <AnimatedSection>
@@ -367,9 +369,7 @@ export default function Landing() {
                   <h2>Stay Updated</h2>
                   <p>Get tips on inbox management and updates about new features</p>
                 </div>
-                <div className={styles.newsletterKit}>
-                  <div data-uid="7aa23f5a1a" />
-                </div>
+                <div className={styles.newsletterKit} data-uid="7aa23f5a1a" />
               </div>
             </AnimatedSection>
           </div>
