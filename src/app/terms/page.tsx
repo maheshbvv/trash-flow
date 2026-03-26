@@ -40,21 +40,37 @@ export default function Terms() {
           </section>
 
           <section style={{ marginBottom: '24px' }}>
-            <h2>3. User Responsibilities</h2>
-            <ul style={{ marginLeft: '24px', marginTop: '12px', color: 'var(--text-secondary)' }}>
-              <li>You must have a valid Gmail account to use this service</li>
-              <li>You are responsible for maintaining the confidentiality of your account</li>
-              <li>You agree to use the service in compliance with applicable laws</li>
-              <li>You understand that deleted emails cannot be recovered</li>
-            </ul>
+            <h2>3. Products & Pricing (All prices in INR)</h2>
+            <table style={{ width: '100%', marginTop: '12px', color: 'var(--text-secondary)', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <th style={{ textAlign: 'left', padding: '8px' }}>Product</th>
+                  <th style={{ textAlign: 'right', padding: '8px' }}>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '8px' }}>Free Trial (100 deletions)</td>
+                  <td style={{ textAlign: 'right', padding: '8px' }}>₹0</td>
+                </tr>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '8px' }}>Yearly Subscription (Unlimited)</td>
+                  <td style={{ textAlign: 'right', padding: '8px' }}>₹1,499/year</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '8px' }}>Lifetime License (Unlimited)</td>
+                  <td style={{ textAlign: 'right', padding: '8px' }}>₹3,000 (one-time)</td>
+                </tr>
+              </tbody>
+            </table>
           </section>
 
           <section style={{ marginBottom: '24px' }}>
             <h2>4. Payment Terms</h2>
             <p style={{ color: 'var(--text-secondary)' }}>
-              TrashFlow is available for a one-time payment of $9.99. This payment is 
-              non-refundable and grants lifetime access to the service. No subscription 
-              or recurring fees apply.
+              TrashFlow offers two paid plans: <strong>Yearly</strong> at ₹1,499/year (recurring) 
+              and <strong>Lifetime</strong> at ₹3,000 (one-time payment). All payments are 
+              non-refundable as users can test the service with 100 free deletions before paying.
             </p>
           </section>
 

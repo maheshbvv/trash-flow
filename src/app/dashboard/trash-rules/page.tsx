@@ -14,6 +14,7 @@ interface TrashResponse {
   success: boolean
   trashed: number
   message: string
+  upgradeRequired?: boolean
 }
 
 export default function TrashRules() {
@@ -30,7 +31,7 @@ export default function TrashRules() {
   const [trashResult, setTrashResult] = useState<TrashResponse | null>(null)
   const [showWarning1, setShowWarning1] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string | React.ReactNode>('')
 
   useEffect(() => {
     const type = searchParams.get('type')
@@ -60,9 +61,9 @@ export default function TrashRules() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          from: mode === 'sender' ? from : undefined,
-          dateFrom,
-          dateTo,
+          sender: mode === 'sender' ? from : undefined,
+          after: dateFrom,
+          before: dateTo,
           isMarketing: mode === 'marketing'
         })
       })
@@ -102,9 +103,9 @@ export default function TrashRules() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          from: mode === 'sender' ? from : undefined,
-          dateFrom,
-          dateTo,
+          sender: mode === 'sender' ? from : undefined,
+          after: dateFrom,
+          before: dateTo,
           isMarketing: mode === 'marketing'
         })
       })
@@ -112,6 +113,9 @@ export default function TrashRules() {
       const data: TrashResponse = await res.json()
       
       if (!res.ok) {
+        if (data.upgradeRequired) {
+          throw new Error(data.message + '|' + 'upgrade')
+        }
         throw new Error(data.message || 'Failed to trash emails')
       }
       
@@ -129,8 +133,36 @@ export default function TrashRules() {
       })
       
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    } catch (err) {
-      setError('Failed to trash emails. Please try again.')
+    } catch (err: any) {
+      console.error("Trash error:", err)
+      const errMsg = err?.message || 'Failed to trash emails. Please try again.'
+      const isUpgradeRequired = errMsg.includes('|upgrade')
+      const cleanMsg = errMsg.replace('|upgrade', '')
+      
+      if (isUpgradeRequired) {
+        setError(
+          <div>
+            <p>{cleanMsg}</p>
+            <button
+              onClick={() => router.push('/dashboard/settings')}
+              style={{
+                marginTop: '12px',
+                background: 'var(--primary)',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Upgrade Now
+            </button>
+          </div>
+        )
+      } else {
+        setError(cleanMsg)
+      }
     } finally {
       setIsDeleting(false)
     }

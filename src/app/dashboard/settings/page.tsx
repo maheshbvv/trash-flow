@@ -1,8 +1,9 @@
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import styles from './page.module.css'
+import { load } from '@cashfreepayments/cashfree-js'
 
 interface Schedule {
   id: string
@@ -16,11 +17,20 @@ interface Schedule {
   createdAt: string
 }
 
+interface Subscription {
+  subscriptionType: string
+  isPaid: boolean
+  deletionsUsed: number
+  maxDeletions: number
+  planName: string
+}
+
 export default function Settings() {
   const { data: session } = useSession()
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     fromEmail: '',
@@ -32,10 +42,67 @@ export default function Settings() {
   const [saving, setSaving] = useState(false)
   const [dailyReport, setDailyReport] = useState(true)
   const [criticalAlerts, setCriticalAlerts] = useState(true)
+  const [showPricing, setShowPricing] = useState(false)
+  const [upgrading, setUpgrading] = useState(false)
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null)
+  const [cashfreeSdk, setCashfreeSdk] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchSchedules()
+    fetchSubscription()
+    initCashfree()
   }, [session])
+
+  const initCashfree = async () => {
+    try {
+      const cf = await load({ mode: 'production' })
+      setCashfreeSdk(cf)
+    } catch (error) {
+      console.error('Failed to load Cashfree SDK:', error)
+    }
+  }
+
+  const fetchSubscription = async () => {
+    try {
+      const res = await fetch('/api/user/subscription')
+      const data = await res.json()
+      setSubscription(data)
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error)
+    }
+  }
+
+  const handlePayment = async (planId: string) => {
+    setUpgrading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/user/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId })
+      })
+      const data = await res.json()
+      
+      if (data.paymentSessionId && cashfreeSdk) {
+        await cashfreeSdk.checkout({
+          paymentSessionId: data.paymentSessionId,
+          redirectTarget: '_self'
+        })
+      } else if (data.paymentLink) {
+        window.location.href = data.paymentLink
+      } else {
+        const errorMsg = data.details || data.error || 'Failed to create payment order'
+        setError(errorMsg + (data.debug ? ` (${JSON.stringify(data.debug)})` : ''))
+        console.error('Payment error response:', data)
+      }
+    } catch (error) {
+      console.error('Payment error:', error)
+      setError('Failed to initiate payment')
+    } finally {
+      setUpgrading(false)
+    }
+  }
 
   const fetchSchedules = async () => {
     try {
@@ -144,6 +211,147 @@ export default function Settings() {
           </button>
         </div>
       </section>
+
+      {/* Subscription Section */}
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionIcon}>
+            <span className="material-symbols-outlined">workspace_premium</span>
+          </div>
+          <h2 className={styles.sectionTitle}>Subscription</h2>
+        </div>
+        
+        <div className={styles.formCard}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div>
+              <p style={{ fontSize: '18px', fontWeight: '600' }}>{subscription?.planName || 'Free Trial'}</p>
+              <p style={{ color: 'var(--on-surface-variant)', marginTop: '4px' }}>
+                {subscription?.maxDeletions === -1 
+                  ? 'Unlimited deletions' 
+                  : `${subscription?.deletionsUsed || 0} / ${subscription?.maxDeletions || 100} deletions used`}
+              </p>
+            </div>
+            {!subscription?.isPaid && subscription?.maxDeletions !== -1 && (
+              <button 
+                onClick={() => setShowPricing(true)}
+                style={{
+                  background: 'var(--primary)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                Upgrade
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Modal */}
+      {showPricing && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'var(--surface)',
+            borderRadius: '16px',
+            padding: '32px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <h2 style={{ fontSize: '24px', marginBottom: '24px', textAlign: 'center' }}>Choose Your Plan</h2>
+            
+            {error && (
+              <div style={{ 
+                marginBottom: '16px', 
+                padding: '12px', 
+                border: '1px solid #dc2626', 
+                borderRadius: '8px', 
+                background: '#fef2f2',
+                color: '#dc2626',
+                fontSize: '14px'
+              }}>
+                {error}
+              </div>
+            )}
+            
+            <div style={{ marginBottom: '16px', padding: '16px', border: '1px solid var(--outline)', borderRadius: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ fontWeight: '600' }}>Free Trial</p>
+                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>100 deletions total</p>
+                </div>
+                <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Free</span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '16px', padding: '16px', border: '1px solid var(--primary)', borderRadius: '12px', background: 'rgba(187,23,18,0.05)', cursor: 'pointer' }} onClick={() => handlePayment('yearly')}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ fontWeight: '600' }}>Yearly</p>
+                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>Unlimited deletions</p>
+                </div>
+                <span style={{ fontWeight: '600', color: 'var(--primary)' }}>₹1,499/year</span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '24px', padding: '16px', border: '1px solid var(--primary)', borderRadius: '12px', background: 'rgba(187,23,18,0.05)', cursor: 'pointer' }} onClick={() => handlePayment('lifetime')}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ fontWeight: '600' }}>Lifetime</p>
+                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>One-time payment</p>
+                </div>
+                <span style={{ fontWeight: '600', color: 'var(--primary)' }}>₹3,000</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => {
+                  setShowPricing(false)
+                  setCheckoutUrl(null)
+                }}
+                style={{
+                  background: 'transparent',
+                  color: 'var(--on-surface)',
+                  border: '1px solid var(--outline)',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                Close
+              </button>
+            </div>
+
+            {checkoutUrl && (
+              <div style={{ marginTop: '20px', height: '400px' }}>
+                <iframe 
+                  src={checkoutUrl}
+                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px' }}
+                  title="Checkout"
+                  onLoad={() => {
+                    // Listen for success redirect
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Scheduled Cleanups */}
       <section className={styles.section}>
@@ -335,10 +543,23 @@ export default function Settings() {
         <div className={styles.dangerContent}>
           <div>
             <p className={styles.dangerTitle}>Deactivate Account</p>
-            <p className={styles.dangerDesc}>This will stop all curation rules and purge your configuration data.</p>
+            <p className={styles.dangerDesc}>This will clear all operations, schedules, and history. Your account and subscription remain active.</p>
           </div>
-          <button className={styles.dangerBtn}>
-            Delete All Data
+          <button 
+            className={styles.dangerBtn}
+            onClick={async () => {
+              if (confirm('Are you sure you want to delete all data? Your account and subscription will remain.')) {
+                const res = await fetch('/api/user/delete', { method: 'DELETE' })
+                if (res.ok) {
+                  alert('All data cleared. Your account remains active.')
+                  window.location.reload()
+                } else {
+                  alert('Failed to delete data')
+                }
+              }
+            }}
+          >
+            Clear All Data
           </button>
         </div>
       </section>

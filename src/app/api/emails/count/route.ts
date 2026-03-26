@@ -55,6 +55,9 @@ export async function POST(req: NextRequest) {
     const after = validation.data?.after
     const { isMarketing } = body
 
+    console.log("Request body:", JSON.stringify(body))
+    console.log("Sender from validation:", sender)
+
     if (!validateDateRange(before, after)) {
       return NextResponse.json({ error: "Invalid date range" }, { status: 400 })
     }
@@ -65,9 +68,14 @@ export async function POST(req: NextRequest) {
 
     if (isMarketing) {
       const parts: string[] = []
-      parts.push('category:promotions')
-      const keywordQueries = MARKETING_KEYWORDS.map(k => `(subject:${k} OR subject:${k.toUpperCase()})`)
-      parts.push(`(${keywordQueries.join(' OR ')})`)
+      const subjectKeywords = ['promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop', 'order']
+      const senderKeywords = ['newsletter', 'marketing', 'promo', 'offers']
+      
+      const subjectQueries = subjectKeywords.map(k => `subject:${k}`)
+      const senderQueries = senderKeywords.map(k => `from:${k}`)
+      
+      parts.push(`(${subjectQueries.join(' OR ')} OR ${senderQueries.join(' OR ')} OR category:promotions)`)
+      
       if (after) parts.push(`after:${formatDateForGmail(new Date(after))}`)
       if (before) parts.push(`before:${formatDateForGmail(new Date(before))}`)
       query = parts.join(' ')
@@ -82,6 +90,8 @@ export async function POST(req: NextRequest) {
     if (!query.trim()) {
       return NextResponse.json({ count: 0, query: '' })
     }
+
+    console.log("Search query:", query)
 
     let totalCount = 0
     let pageToken: string | undefined
@@ -98,12 +108,15 @@ export async function POST(req: NextRequest) {
       })
 
       const responseData = response.data as Record<string, unknown>
+      console.log("Gmail API response:", JSON.stringify(responseData))
+      
       if (responseData.error) {
         console.error("Gmail API error:", responseData.error)
-        return NextResponse.json({ error: "Gmail API error" }, { status: 500 })
+        return NextResponse.json({ error: "Gmail API error", details: responseData.error }, { status: 500 })
       }
 
       const messages = (responseData.messages as Array<unknown>) || []
+      console.log("Found messages:", messages.length)
       totalCount += messages.length
       pageToken = responseData.nextPageToken as string | undefined
       if (totalCount >= 500) break

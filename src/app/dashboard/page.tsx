@@ -17,6 +17,15 @@ export default function Dashboard() {
   const { data: session } = useSession()
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('subscription') === 'success') {
+      setShowSuccess(true)
+      window.history.replaceState({}, '', '/dashboard')
+    }
+  }, [])
 
   useEffect(() => {
     async function fetchStats() {
@@ -46,6 +55,16 @@ export default function Dashboard() {
 
   return (
     <div className={styles.container}>
+      {showSuccess && (
+        <div className="success-banner" style={{ marginBottom: '24px' }}>
+          <span style={{ fontSize: '24px' }}>🎉</span>
+          <div>
+            <p><strong>Payment successful!</strong></p>
+            <p style={{ opacity: 0.8, fontSize: '14px' }}>Your subscription is now active. Enjoy unlimited deletions!</p>
+          </div>
+        </div>
+      )}
+
       {/* Hero Stats / Bento Grid */}
       <div className={styles.statsGrid}>
         {/* Main Metric - Efficiency Rating */}

@@ -97,9 +97,24 @@ export default function Home() {
           </div>
 
           <div className={styles.pricing}>
-            <h2>One-time Payment</h2>
-            <p className={styles.price}>$9.99</p>
-            <p>Pay once, use forever. No monthly fees.</p>
+            <h2>Pricing (INR)</h2>
+            <div className={styles.priceRow}>
+              <div className={styles.priceCard}>
+                <h3>Free Trial</h3>
+                <p className={styles.price}>₹0</p>
+                <p>100 deletions</p>
+              </div>
+              <div className={styles.priceCard}>
+                <h3>Yearly</h3>
+                <p className={styles.price}>₹1,499<span>/year</span></p>
+                <p>Unlimited</p>
+              </div>
+              <div className={styles.priceCard}>
+                <h3>Lifetime</h3>
+                <p className={styles.price}>₹3,000</p>
+                <p>One-time</p>
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -110,6 +125,8 @@ export default function Home() {
           <div className="footer-links">
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>
+            <Link href="/refunds">Refunds</Link>
+            <Link href="/contact">Contact Us</Link>
           </div>
         </div>
       </footer>

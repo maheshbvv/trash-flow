@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "TrashFlow - Bulk Delete Gmail Emails",
   description: "Bulk delete emails from specific senders or date ranges. Clean your Gmail inbox in seconds.",
+  icons: {
+    icon: '/trashflow-icon.svg',
+  },
 };
 
 export default function RootLayout({

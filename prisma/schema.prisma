@@ -3,18 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id            String       @id @default(uuid())
-  email         String       @unique
-  name          String?
-  createdAt     DateTime     @default(now())
-  isPaid        Boolean      @default(false)
-  operations    Operation[]
-  schedules     Schedule[]
+  id               String       @id @default(uuid())
+  email            String       @unique
+  name             String?
+  refreshToken     String?
+  accessToken      String?
+  tokenExpiry      DateTime?
+  createdAt        DateTime     @default(now())
+  isPaid           Boolean      @default(false)
+  subscriptionType String       @default("free") // "free", "yearly", "lifetime"
+  deletionsUsed    Int          @default(0)
+  lemonsqueezyId  String?
+  operations       Operation[]
+  schedules        Schedule[]
 }
 
 model Operation {

@@ -22,14 +22,21 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       if (user.email) {
+        const email = user.email
         await prisma.user.upsert({
-          where: { email: user.email },
+          where: { email },
           update: { 
-            name: user.name,
+            name: user.name || '',
+            refreshToken: account?.refresh_token || undefined,
+            accessToken: account?.access_token || undefined,
+            tokenExpiry: account?.expires_at ? new Date(account.expires_at * 1000) : undefined,
           },
           create: {
-            email: user.email,
-            name: user.name || null,
+            email,
+            name: user.name || '',
+            refreshToken: account?.refresh_token || undefined,
+            accessToken: account?.access_token || undefined,
+            tokenExpiry: account?.expires_at ? new Date(account.expires_at * 1000) : undefined,
           }
         })
 

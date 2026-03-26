@@ -12,6 +12,10 @@ interface Operation {
   createdAt: string
 }
 
+interface HistoryResponse {
+  operations: Operation[]
+}
+
 export default function History() {
   const { data: session } = useSession()
   const [operations, setOperations] = useState<Operation[]>([])
@@ -25,7 +29,7 @@ export default function History() {
   const fetchHistory = async () => {
     try {
       const res = await fetch('/api/user/history')
-      const data = await res.json()
+      const data: HistoryResponse = await res.json()
       setOperations(data.operations || [])
     } catch (error) {
       console.error('Failed to fetch history:', error)
@@ -109,7 +113,7 @@ export default function History() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Total Freed</span>
           <div className={styles.statValue}>
-            <span className={styles.statNumber}>{Math.round(totalFreed * 0.015)} GB</span>
+            <span className={styles.statNumber}>{Math.round(totalFreed * 0.015)} MB</span>
             <span className={styles.statMeta}>this month</span>
           </div>
         </div>

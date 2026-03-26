@@ -84,6 +84,33 @@
   border-radius: 16px;
 }
 
+.priceRow {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.priceCard {
+  background: var(--surface);
+  padding: 20px 24px;
+  border-radius: 12px;
+  min-width: 140px;
+}
+
+.priceCard h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.priceCard p {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  margin-top: 4px;
+}
+
 .pricing h2 {
   font-size: 20px;
   font-weight: 700;

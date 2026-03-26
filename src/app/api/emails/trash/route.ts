@@ -31,6 +31,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
   }
 
+  // Check subscription limits
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email }
+  })
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 })
+  }
+
+  const isPaid = user.subscriptionType === 'yearly' || user.subscriptionType === 'lifetime'
+  const maxBatch = isPaid ? 500 : 100
+  const totalLimit = 100
+
+  // For free users, check total deletions used
+  if (!isPaid && user.deletionsUsed >= totalLimit) {
+    return NextResponse.json({ 
+      error: "Free trial limit reached",
+      message: "You've used all 100 free deletions. Upgrade to continue.",
+      upgradeRequired: true
+    }, { status: 403 })
+  }
+
   try {
     const body = await req.json()
     const validation = validateEmail(body)
@@ -62,9 +84,14 @@ export async function POST(req: NextRequest) {
 
     if (isMarketing) {
       const parts: string[] = []
-      parts.push('category:promotions')
-      const keywordQueries = MARKETING_KEYWORDS.map(k => `(subject:${k} OR subject:${k.toUpperCase()})`)
-      parts.push(`(${keywordQueries.join(' OR ')})`)
+      const subjectKeywords = ['promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop', 'order']
+      const senderKeywords = ['newsletter', 'marketing', 'promo', 'offers']
+      
+      const subjectQueries = subjectKeywords.map(k => `subject:${k}`)
+      const senderQueries = senderKeywords.map(k => `from:${k}`)
+      
+      parts.push(`(${subjectQueries.join(' OR ')} OR ${senderQueries.join(' OR ')} OR category:promotions)`)
+      
       if (after) parts.push(`after:${formatDateForGmail(new Date(after))}`)
       if (before) parts.push(`before:${formatDateForGmail(new Date(before))}`)
       query = parts.join(' ')
@@ -78,7 +105,7 @@ export async function POST(req: NextRequest) {
 
     let totalTrashed = 0
     let pageToken: string | undefined
-    const maxEmails = 500
+    const maxEmails = maxBatch
 
     do {
       const response = await gmail.users.messages.list({
@@ -111,6 +138,14 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email: session.user.email } })
     
     if (user) {
+      // Increment deletions used for free users
+      if (!isPaid) {
+        await prisma.user.update({
+          where: { email: session.user.email },
+          data: { deletionsUsed: { increment: totalTrashed } }
+        })
+      }
+      
       await prisma.operation.create({
         data: {
           userId: user.id,
@@ -129,16 +164,19 @@ export async function POST(req: NextRequest) {
       details: { trashed: totalTrashed, sender, before, after, isMarketing }
     })
 
-    return NextResponse.json({ 
+    const response = { 
       success: true, 
       trashed: totalTrashed,
       remaining: rateLimitResult.remaining,
       message: totalTrashed >= maxEmails 
         ? `Trashed ${totalTrashed} emails (max limit reached)` 
         : `Successfully trashed ${totalTrashed} emails`
-    })
+    }
+    
+    console.log("Trash response:", JSON.stringify(response))
+    return NextResponse.json(response)
   } catch (error) {
     console.error("Error trashing emails:", error)
-    return NextResponse.json({ error: "Failed to trash emails" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to trash emails", message: String(error) }, { status: 500 })
   }
 }
