@@ -367,7 +367,7 @@ export default function Landing() {
                   <h2>Stay Updated</h2>
                   <p>Get tips on inbox management and updates about new features</p>
                 </div>
-                <div className={styles.newsletterKit} data-uid="7aa23f5a1a" />
+                <script data-uid="7aa23f5a1a" async></script>
               </div>
             </AnimatedSection>
           </div>
