@@ -356,9 +356,7 @@ export default function Landing() {
         <section className={styles.newsletter}>
           <div className="container">
             <AnimatedSection>
-              <div className={styles.newsletter}>
-                <script async data-uid="7aa23f5a1a" data-format="inline" />
-              </div>
+              <form data-uid="7aa23f5a1a" data-format="inline"></form>
             </AnimatedSection>
           </div>
         </section>
