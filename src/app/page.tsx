@@ -364,14 +364,8 @@ export default function Landing() {
         <section className={styles.newsletter}>
           <div className="container">
             <AnimatedSection>
-              <div className={styles.newsletterCard}>
-                <div className={styles.newsletterContent}>
-                  <h2>Stay Updated</h2>
-                  <p>Get tips on inbox management and updates about new features</p>
-                </div>
-                <div className={styles.newsletterKit}>
-                  <div className="formkit-inline-form" data-uid="7aa23f5a1a"></div>
-                </div>
+              <div className={styles.newsletterKit}>
+                <div className="formkit-inline-form" data-uid="7aa23f5a1a"></div>
               </div>
             </AnimatedSection>
           </div>
