@@ -3,7 +3,7 @@
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import styles from './page.module.css'
 
@@ -123,8 +123,6 @@ function AnimatedSection({ children, delay = 0 }: { children: React.ReactNode; d
 export default function Landing() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [subscribed, setSubscribed] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -142,14 +140,6 @@ export default function Landing() {
       { opacity: 1, duration: 1 }
     )
   }, [])
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
-    
-    setSubscribed(true)
-    setEmail('')
-  }
 
   if (status === 'loading') {
     return (
@@ -377,29 +367,7 @@ export default function Landing() {
                   <h2>Stay Updated</h2>
                   <p>Get tips on inbox management and updates about new features</p>
                 </div>
-                {subscribed ? (
-                  <div className={styles.subscribedMessage}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                      <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    Thanks for subscribing!
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubscribe} className={styles.newsletterForm}>
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="input"
-                      required
-                    />
-                    <button type="submit" className="btn btn-primary">
-                      Subscribe
-                    </button>
-                  </form>
-                )}
+                <div className={styles.newsletterKit} data-uid="7aa23f5a1a" />
               </div>
             </AnimatedSection>
           </div>
