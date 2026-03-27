@@ -56,11 +56,7 @@ export async function POST(request: Request) {
                         <table cellpadding="0" cellspacing="0" style="display: inline-block;">
                           <tr>
                             <td style="width: 48px; height: 48px; background: linear-gradient(135deg, #005bbf 0%, #1a73e8 100%); border-radius: 12px; text-align: center; vertical-align: middle;">
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-                                <line x1="3" y1="6" x2="21" y2="6"/>
-                                <path d="M3 6h18"/>
-                              </svg>
+                              <img src="https://trashflow.pendura.in/trashflow-icon.svg" alt="TrashFlow" width="24" height="24" style="display: block; margin: 12px auto;" />
                             </td>
                             <td style="padding-left: 12px; text-align: left; vertical-align: middle;">
                               <div style="font-size: 20px; font-weight: 800; color: #005bbf; letter-spacing: -0.02em;">TrashFlow</div>
