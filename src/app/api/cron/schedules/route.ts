@@ -21,11 +21,22 @@ export async function POST(req: NextRequest) {
       include: { user: true }
     })
 
+    if (schedules.length === 0) {
+      return NextResponse.json({ success: true, processed: 0, message: "No active schedules" })
+    }
+
     let processed = 0
     let trashed = 0
     const errors: string[] = []
+    const startTime = Date.now()
+    const MAX_RUNTIME = 25000 // 25 seconds max
 
     for (const schedule of schedules) {
+      // Check timeout
+      if (Date.now() - startTime > MAX_RUNTIME) {
+        errors.push("Runtime limit reached, stopping execution")
+        break
+      }
       try {
         const shouldRun = checkScheduleFrequency(schedule.frequency, schedule.lastRunAt, now)
         if (!shouldRun) continue
