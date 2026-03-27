@@ -31,6 +31,7 @@ export default function Settings() {
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [formData, setFormData] = useState({
     name: '',
@@ -159,8 +160,6 @@ export default function Settings() {
   }
 
   const handleRunNow = async (id: string) => {
-    if (!confirm('Run this schedule now?')) return
-
     try {
       const res = await fetch('/api/user/schedules', {
         method: 'PUT',
@@ -169,14 +168,14 @@ export default function Settings() {
       })
       const data = await res.json()
       if (data.success) {
-        alert(`Successfully trashed ${data.trashed} emails!`)
+        setToast({ message: `Successfully trashed ${data.trashed} emails!`, type: 'success' })
         fetchSchedules()
       } else {
-        alert(data.error || 'Failed to run schedule')
+        setToast({ message: data.error || 'Failed to run schedule', type: 'error' })
       }
     } catch (error) {
       console.error('Failed to run schedule:', error)
-      alert('Failed to run schedule')
+      setToast({ message: 'Failed to run schedule', type: 'error' })
     }
   }
 
@@ -197,8 +196,26 @@ export default function Settings() {
     )
   }
 
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 4000)
+      return () => clearTimeout(timer)
+    }
+  }, [toast])
+
   return (
     <div className={styles.container}>
+      {toast && (
+        <div className={`${styles.toast} ${toast.type === 'success' ? styles.toastSuccess : styles.toastError}`}>
+          {toast.type === 'success' ? (
+            <span className="material-symbols-outlined">check_circle</span>
+          ) : (
+            <span className="material-symbols-outlined">error</span>
+          )}
+          {toast.message}
+        </div>
+      )}
+
       {/* Header */}
       <div className={styles.header}>
         <h1 className={styles.title}>Configuration Panel</h1>
@@ -576,17 +593,15 @@ export default function Settings() {
             <p className={styles.dangerTitle}>Deactivate Account</p>
             <p className={styles.dangerDesc}>This will clear all operations, schedules, and history. Your account and subscription remain active.</p>
           </div>
-          <button 
+            <button 
             className={styles.dangerBtn}
             onClick={async () => {
-              if (confirm('Are you sure you want to delete all data? Your account and subscription will remain.')) {
-                const res = await fetch('/api/user/delete', { method: 'DELETE' })
-                if (res.ok) {
-                  alert('All data cleared. Your account remains active.')
-                  window.location.reload()
-                } else {
-                  alert('Failed to delete data')
-                }
+              const res = await fetch('/api/user/delete', { method: 'DELETE' })
+              if (res.ok) {
+                setToast({ message: 'All data cleared. Your account remains active.', type: 'success' })
+                window.location.reload()
+              } else {
+                setToast({ message: 'Failed to delete data', type: 'error' })
               }
             }}
           >
