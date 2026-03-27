@@ -8,10 +8,18 @@ export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // For now, just show success - can integrate email service later
-    setSubmitted(true)
+    
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    })
+
+    if (response.ok) {
+      setSubmitted(true)
+    }
   }
 
   return (
