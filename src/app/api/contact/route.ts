@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
 
     const data = await resend.emails.send({
-      from: 'TrashFlow Contact <contact@pendura.in>',
+      from: 'TrashFlow Contact <contact@trashflow.pendura.in>',
       to: 'reach@pendura.in',
       subject: `New Contact Form Submission from ${name}`,
       html: `
