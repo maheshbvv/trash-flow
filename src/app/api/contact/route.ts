@@ -42,11 +42,11 @@ export async function POST(request: Request) {
                       <div style="text-align: center; margin-bottom: 24px;">
                         <table cellpadding="0" cellspacing="0" style="display: inline-block;">
                           <tr>
-                            <td style="width: 48px; height: 48px; background: var(--primary); color: var(--on-primary); border-radius: 12px; text-align: center; vertical-align: middle; font-size: 24px;">
-                              <span style="line-height: 48px;">🗑️</span>
+                            <td style="width: 48px; height: 48px; border-radius: 12px; text-align: center; vertical-align: middle;">
+                              <img src="https://trashflow.pendura.in/trashflow-icon.svg" alt="TrashFlow" width="40" height="40" style="display: block; margin: 4px auto;" />
                             </td>
                             <td style="padding-left: 12px; text-align: left; vertical-align: middle;">
-                              <div style="font-size: 20px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em;">TrashFlow</div>
+                              <div style="font-size: 20px; font-weight: 800; color: #1a6fd4; letter-spacing: -0.02em;">TrashFlow</div>
                               <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280;">Precision Trashing</div>
                             </td>
                           </tr>
@@ -100,11 +100,11 @@ export async function POST(request: Request) {
                       <div style="text-align: center; margin-bottom: 24px;">
                         <table cellpadding="0" cellspacing="0" style="display: inline-block;">
                           <tr>
-                            <td style="width: 48px; height: 48px; background: var(--primary); color: var(--on-primary); border-radius: 12px; text-align: center; vertical-align: middle; font-size: 24px;">
-                              <span style="line-height: 48px;">🗑️</span>
+                            <td style="width: 48px; height: 48px; border-radius: 12px; text-align: center; vertical-align: middle;">
+                              <img src="https://trashflow.pendura.in/trashflow-icon.svg" alt="TrashFlow" width="40" height="40" style="display: block; margin: 4px auto;" />
                             </td>
                             <td style="padding-left: 12px; text-align: left; vertical-align: middle;">
-                              <div style="font-size: 20px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em;">TrashFlow</div>
+                              <div style="font-size: 20px; font-weight: 800; color: #1a6fd4; letter-spacing: -0.02em;">TrashFlow</div>
                               <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280;">Precision Trashing</div>
                             </td>
                           </tr>
