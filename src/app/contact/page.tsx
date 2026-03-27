@@ -18,17 +18,21 @@ export default function Contact() {
     <div className={styles.page}>
       <header className="header">
         <div className="container header-content">
-          <Link href="/" className="logo">
-            <svg className="logo-icon" viewBox="0 0 24 24" fill="none">
-              <path d="M19 4H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zM5 8l7 5 7-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            TrashFlow
+          <Link href="/" className={styles.logoSection}>
+            <div className={styles.logoIcon}>
+              <span className="material-symbols-outlined">auto_delete</span>
+            </div>
+            <div>
+              <div className={styles.logoText}>TrashFlow</div>
+              <div className={styles.logoSubtext}>Precision Trashing</div>
+            </div>
           </Link>
         </div>
       </header>
 
-      <main className={styles.main}>
-        <div className="card" style={{ maxWidth: '600px' }}>
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 20px' }}>
+        <div className="container" style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="card" style={{ maxWidth: '600px', width: '100%' }}>
           <h1 className={styles.title}>Contact Us</h1>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>We'd love to hear from you!</p>
 
@@ -123,6 +127,7 @@ export default function Contact() {
             <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>
               <strong>Response Time:</strong> 24-48 hours on business days
             </p>
+          </div>
           </div>
         </div>
       </main>
