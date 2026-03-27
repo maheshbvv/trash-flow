@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     const data = await resend.emails.send({
       from: 'TrashFlow Contact <onboarding@resend.dev>',
-      to: 'reach@pendura.in',
+      to: 'maheshbvv@hotmail.com',
       subject: `New Contact Form Submission from ${name}`,
       html: `
         <h2>New Contact Form Submission</h2>
@@ -32,7 +32,6 @@ export async function POST(request: Request) {
         <p><strong>Message:</strong></p>
         <p>${message}</p>
       `,
-      replyTo: email,
     })
 
     return NextResponse.json({ success: true, data })
