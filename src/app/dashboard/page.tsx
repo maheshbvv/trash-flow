@@ -5,12 +5,20 @@ import { useEffect, useState } from 'react'
 import styles from './page.module.css'
 import Link from 'next/link'
 
+interface VolumeData {
+  date: string
+  day: string
+  count: number
+}
+
 interface Stats {
   totalDeleted: number
   totalOperations: number
   searchCount: number
   deleteCount: number
   recentOperations: any[]
+  volumeData: VolumeData[]
+  peakDay: string | null
 }
 
 export default function Dashboard() {
@@ -131,19 +139,40 @@ export default function Dashboard() {
           <div className={styles.chartHeader}>
             <p className={styles.metricCardLabel}>Volume Over Time</p>
             <div className={styles.chartBars}>
-              <div className={styles.chartBar} style={{ height: '40%' }}></div>
-              <div className={styles.chartBar} style={{ height: '60%' }}></div>
-              <div className={styles.chartBar} style={{ height: '35%' }}></div>
-              <div className={styles.chartBar} style={{ height: '80%' }}></div>
-              <div className={styles.chartBar} style={{ height: '95%', background: 'var(--primary)' }}></div>
-              <div className={styles.chartBar} style={{ height: '55%' }}></div>
-              <div className={styles.chartBar} style={{ height: '30%' }}></div>
+              {stats?.volumeData?.map((vol, i) => {
+                const maxCount = Math.max(...(stats?.volumeData?.map(v => v.count) || [1]), 1)
+                const height = maxCount > 0 ? (vol.count / maxCount) * 100 : 0
+                return (
+                  <div 
+                    key={i} 
+                    className={styles.chartBar} 
+                    style={{ 
+                      height: `${Math.max(height, 4)}%`,
+                      background: height > 0 ? 'var(--primary)' : 'var(--outline-variant)'
+                    }}
+                    title={`${vol.day}: ${vol.count} emails`}
+                  ></div>
+                )
+              })}
+              {(!stats?.volumeData || stats.volumeData.length === 0) && (
+                <>
+                  <div className={styles.chartBar} style={{ height: '4%' }}></div>
+                  <div className={styles.chartBar} style={{ height: '4%' }}></div>
+                  <div className={styles.chartBar} style={{ height: '4%' }}></div>
+                  <div className={styles.chartBar} style={{ height: '4%' }}></div>
+                  <div className={styles.chartBar} style={{ height: '4%' }}></div>
+                  <div className={styles.chartBar} style={{ height: '4%' }}></div>
+                  <div className={styles.chartBar} style={{ height: '4%' }}></div>
+                </>
+              )}
             </div>
           </div>
           <div className={styles.chartSidebar}>
             <p className={styles.metricCardLabel}>Peak Cleanup Day</p>
-            <p className={styles.peakDay}>Tuesday</p>
-            <p className={styles.chartMeta}>Avg. 450 items/batch</p>
+            <p className={styles.peakDay}>{stats?.peakDay || 'N/A'}</p>
+            <p className={styles.chartMeta}>
+              {stats?.totalDeleted ? `Total: ${stats.totalDeleted.toLocaleString()} deleted` : 'No data yet'}
+            </p>
           </div>
         </div>
       </div>
