@@ -36,22 +36,15 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: var(--primary);
-  color: var(--on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 91, 191, 0.3);
-}
-
-.logoIcon .material-symbols-outlined {
-  font-size: 22px;
 }
 
 .logoText {
   font-size: 18px;
   font-weight: 800;
-  color: var(--primary);
+  color: #bb170e;
   letter-spacing: -0.02em;
 }
 
