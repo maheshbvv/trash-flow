@@ -36,12 +36,9 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: var(--primary);
-  color: var(--on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 91, 191, 0.3);
 }
 
 .logoIcon .material-symbols-outlined {

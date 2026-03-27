@@ -370,7 +370,7 @@ export default function Landing() {
           <div className={styles.footerBrand}>
             <div className={styles.logoSection}>
               <div className={styles.logoIcon}>
-                <span className="material-symbols-outlined">auto_delete</span>
+                <img src="/trashflow-icon.svg" alt="TrashFlow" width="28" height="28" style={{ display: 'block' }} />
               </div>
               <div>
                 <div className={styles.logoText}>TrashFlow</div>
