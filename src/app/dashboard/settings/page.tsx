@@ -15,6 +15,7 @@ interface Schedule {
   frequency: string
   isActive: boolean
   createdAt: string
+  lastRunAt: string | null
 }
 
 interface Subscription {
@@ -154,6 +155,28 @@ export default function Settings() {
       fetchSchedules()
     } catch (error) {
       console.error('Failed to delete schedule:', error)
+    }
+  }
+
+  const handleRunNow = async (id: string) => {
+    if (!confirm('Run this schedule now?')) return
+
+    try {
+      const res = await fetch('/api/user/schedules', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scheduleId: id })
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert(`Successfully trashed ${data.trashed} emails!`)
+        fetchSchedules()
+      } else {
+        alert(data.error || 'Failed to run schedule')
+      }
+    } catch (error) {
+      console.error('Failed to run schedule:', error)
+      alert('Failed to run schedule')
     }
   }
 
@@ -478,8 +501,16 @@ export default function Settings() {
                   <div className={styles.scheduleName}>{schedule.name}</div>
                   <div className={styles.scheduleMeta}>
                     {getFrequencyLabel(schedule.frequency)}
+                    {schedule.lastRunAt && <> · Last run: {new Date(schedule.lastRunAt).toLocaleDateString()}</>}
                   </div>
                 </div>
+                <button 
+                  onClick={() => handleRunNow(schedule.id)}
+                  className={styles.runNowBtn}
+                  title="Run now"
+                >
+                  <span className="material-symbols-outlined">play_arrow</span>
+                </button>
                 <button 
                   onClick={() => handleDelete(schedule.id)}
                   className={styles.deleteBtn}

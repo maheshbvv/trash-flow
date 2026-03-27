@@ -244,6 +244,24 @@
   color: var(--error);
 }
 
+.runNowBtn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.runNowBtn:hover {
+  background: var(--primary-container);
+}
+
 /* Toggle Cards */
 .toggleGrid {
   display: grid;
