@@ -158,6 +158,10 @@ export async function PUT(req: NextRequest) {
       }
     }
 
+    if (!accessToken) {
+      return NextResponse.json({ error: "No valid access token" }, { status: 401 })
+    }
+
     const gmail = getGmailClient(accessToken)
     
     let query: string
