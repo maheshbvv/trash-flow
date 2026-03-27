@@ -42,8 +42,8 @@ export async function POST(request: Request) {
                       <div style="text-align: center; margin-bottom: 24px;">
                         <table cellpadding="0" cellspacing="0" style="display: inline-block;">
                           <tr>
-                            <td style="width: 48px; height: 48px; border-radius: 12px; text-align: center; vertical-align: middle;">
-                              <img src="https://trashflow.pendura.in/trashflow-icon.svg" alt="TrashFlow" width="40" height="40" style="display: block; margin: 4px auto;" />
+                            <td style="width: 56px; height: 56px; border-radius: 12px; text-align: center; vertical-align: middle;">
+                              <img src="https://trashflow.pendura.in/trashflow-icon.svg" alt="TrashFlow" width="48" height="48" style="display: block; margin: 0 auto;" />
                             </td>
                             <td style="padding-left: 12px; text-align: left; vertical-align: middle;">
                               <div style="font-size: 20px; font-weight: 800; color: #1a6fd4; letter-spacing: -0.02em;">TrashFlow</div>
@@ -100,8 +100,8 @@ export async function POST(request: Request) {
                       <div style="text-align: center; margin-bottom: 24px;">
                         <table cellpadding="0" cellspacing="0" style="display: inline-block;">
                           <tr>
-                            <td style="width: 48px; height: 48px; border-radius: 12px; text-align: center; vertical-align: middle;">
-                              <img src="https://trashflow.pendura.in/trashflow-icon.svg" alt="TrashFlow" width="40" height="40" style="display: block; margin: 4px auto;" />
+                            <td style="width: 56px; height: 56px; border-radius: 12px; text-align: center; vertical-align: middle;">
+                              <img src="https://trashflow.pendura.in/trashflow-icon.svg" alt="TrashFlow" width="48" height="48" style="display: block; margin: 0 auto;" />
                             </td>
                             <td style="padding-left: 12px; text-align: left; vertical-align: middle;">
                               <div style="font-size: 20px; font-weight: 800; color: #1a6fd4; letter-spacing: -0.02em;">TrashFlow</div>

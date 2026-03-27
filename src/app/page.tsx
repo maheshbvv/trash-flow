@@ -161,7 +161,7 @@ export default function Landing() {
         <div className="container header-content">
           <div className={styles.logoSection}>
             <div className={styles.logoIcon}>
-              <img src="/trashflow-icon.svg" alt="TrashFlow" width="28" height="28" style={{ display: 'block' }} />
+              <img src="/trashflow-icon.svg" alt="TrashFlow" width="34" height="34" style={{ display: 'block' }} />
             </div>
             <div>
               <div className={styles.logoText}>TrashFlow</div>
@@ -370,7 +370,7 @@ export default function Landing() {
           <div className={styles.footerBrand}>
             <div className={styles.logoSection}>
               <div className={styles.logoIcon}>
-                <img src="/trashflow-icon.svg" alt="TrashFlow" width="28" height="28" style={{ display: 'block' }} />
+                <img src="/trashflow-icon.svg" alt="TrashFlow" width="34" height="34" style={{ display: 'block' }} />
               </div>
               <div>
                 <div className={styles.logoText}>TrashFlow</div>
