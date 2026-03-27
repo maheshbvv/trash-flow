@@ -63,6 +63,7 @@ export async function GET() {
     return NextResponse.json({
       subscriptionType: user.subscriptionType,
       isPaid: user.isPaid,
+      isTester: user.isTester,
       deletionsUsed: user.deletionsUsed,
       maxDeletions: currentPlan.maxDeletions,
       planName: currentPlan.name,

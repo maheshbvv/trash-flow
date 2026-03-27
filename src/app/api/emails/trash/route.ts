@@ -41,11 +41,12 @@ export async function POST(req: NextRequest) {
   }
 
   const isPaid = user.subscriptionType === 'yearly' || user.subscriptionType === 'lifetime'
-  const maxBatch = isPaid ? 500 : 500
-  const totalLimit = 500
+  const isTester = user.isTester === true
+  const maxBatch = isPaid || isTester ? 500 : 500
+  const totalLimit = isTester ? -1 : 500
 
   // For free users, check total deletions used
-  if (!isPaid && user.deletionsUsed >= totalLimit) {
+  if (!isPaid && !isTester && user.deletionsUsed >= totalLimit) {
     return NextResponse.json({ 
       error: "Free trial limit reached",
       message: "You've used all 500 free deletions. Upgrade to continue.",

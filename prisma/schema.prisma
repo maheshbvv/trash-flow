@@ -17,9 +17,10 @@ model User {
   tokenExpiry      DateTime?
   createdAt        DateTime     @default(now())
   isPaid           Boolean      @default(false)
+  isTester         Boolean      @default(false)
   subscriptionType String       @default("free") // "free", "yearly", "lifetime"
   deletionsUsed    Int          @default(0)
-  lemonsqueezyId  String?
+  lemonsqueezyId   String?
   operations       Operation[]
   schedules        Schedule[]
 }
