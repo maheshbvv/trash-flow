@@ -28,7 +28,7 @@ export default function Contact() {
         <div className="container header-content">
           <Link href="/" className={styles.logoSection}>
             <div className={styles.logoIcon}>
-              <img src="/trashflow-icon.svg" alt="TrashFlow" width="24" height="24" style={{ display: 'block' }} />
+              <span className="material-symbols-outlined">auto_delete</span>
             </div>
             <div>
               <div className={styles.logoText}>TrashFlow</div>
