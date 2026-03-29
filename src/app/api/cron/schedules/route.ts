@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { getGmailClient, buildSearchQuery, formatDateForGmail } from "@/lib/gmail"
 
 const MARKETING_KEYWORDS = [
-  'promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop', 'order'
+  'promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop'
 ]
 
 export async function POST(req: NextRequest) {
@@ -43,6 +43,25 @@ export async function POST(req: NextRequest) {
 
         if (!schedule.user) {
           errors.push(`User not found for schedule ${schedule.id}`)
+          continue
+        }
+
+        // Check if user subscription is valid (not expired)
+        const isTester = schedule.user.isTester === true
+        const isExpired = schedule.user.subscriptionType !== 'free' && 
+                          schedule.user.subscriptionType !== 'lifetime' && 
+                          schedule.user.subscriptionExpiryDate && 
+                          new Date(schedule.user.subscriptionExpiryDate) < now
+        
+        const canRunSchedule = isTester || (schedule.user.isPaid && !isExpired)
+        
+        if (!canRunSchedule) {
+          errors.push(`Subscription expired for ${schedule.user.email}, skipping schedule ${schedule.id}`)
+          // Optionally deactivate the schedule
+          await prisma.schedule.update({
+            where: { id: schedule.id },
+            data: { isActive: false }
+          })
           continue
         }
 

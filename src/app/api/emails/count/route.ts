@@ -8,7 +8,7 @@ import { auditLog, AuditAction } from "@/lib/audit"
 
 const MARKETING_KEYWORDS = [
   'promotion', 'sale', 'discount', 'offer', 'limited time', 
-  'free', 'buy now', 'shop', 'order', 'deal', 'save',
+  'free', 'buy now', 'shop', 'deal', 'save',
   'new arrival', 'special offer', 'flash sale', 'bonus',
   'unsubscribe', 'newsletter', 'update', 'invitation'
 ]
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     if (isMarketing) {
       const parts: string[] = []
-      const subjectKeywords = ['promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop', 'order']
+      const subjectKeywords = ['promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop']
       const senderKeywords = ['newsletter', 'marketing', 'promo', 'offers']
       
       const subjectQueries = subjectKeywords.map(k => `subject:${k}`)

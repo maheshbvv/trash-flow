@@ -20,7 +20,12 @@ model User {
   isTester         Boolean      @default(false)
   subscriptionType String       @default("free") // "free", "yearly", "lifetime"
   deletionsUsed    Int          @default(0)
-  lemonsqueezyId   String?
+  lemonsqueezyId   String?      // Legacy field (was LemonSqueezy, now Cashfree)
+  subscriptionStartDate DateTime?
+  subscriptionExpiryDate DateTime?
+  amountPaid Float?
+  dailyReport      Boolean      @default(true)
+  criticalAlerts   Boolean      @default(true)
   operations       Operation[]
   schedules        Schedule[]
 }

@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { getGmailClient, buildSearchQuery, formatDateForGmail } from "@/lib/gmail"
 
-const MARKETING_KEYWORDS = ['promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop', 'order']
+const MARKETING_KEYWORDS = ['promotion', 'sale', 'discount', 'offer', 'deal', 'free', 'shop']
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -51,6 +51,23 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    // Check if user is allowed to create schedules
+    const isTester = user.isTester === true
+    const now = new Date()
+    const isExpired = user.subscriptionType !== 'free' && 
+                      user.subscriptionType !== 'lifetime' && 
+                      user.subscriptionExpiryDate && 
+                      new Date(user.subscriptionExpiryDate) < now
+    
+    const canCreateSchedule = isTester || (user.isPaid && !isExpired)
+    
+    if (!canCreateSchedule) {
+      return NextResponse.json({ 
+        error: "Scheduling requires a paid subscription. Upgrade to create automated cleanup schedules.",
+        upgradeRequired: true
+      }, { status: 403 })
     }
 
     const schedule = await prisma.schedule.create({

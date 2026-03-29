@@ -4,7 +4,48 @@ import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useTheme } from '@/context/ThemeContext'
 import styles from './layout.module.css'
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+  
+  const cycleTheme = () => {
+    if (theme === 'light') setTheme('dark')
+    else if (theme === 'dark') setTheme('system')
+    else setTheme('light')
+  }
+  
+  const getIcon = () => {
+    if (theme === 'dark') return 'dark_mode'
+    if (theme === 'light') return 'light_mode'
+    return 'brightness_auto'
+  }
+  
+  const getLabel = () => {
+    if (theme === 'dark') return 'Dark'
+    if (theme === 'light') return 'Light'
+    return 'System'
+  }
+  
+  return (
+    <button 
+      onClick={cycleTheme}
+      className={styles.themeToggle}
+      title={`Current: ${getLabel()}`}
+    >
+      <span className="material-symbols-outlined">{getIcon()}</span>
+      <span>{getLabel()}</span>
+    </button>
+  )
+}
+
+interface SubscriptionData {
+  isPaid: boolean
+  isExpired: boolean
+  planName: string
+  subscriptionExpiryDate: string | null
+}
 
 export default function DashboardLayout({
   children,
@@ -15,12 +56,29 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/')
     }
   }, [status, router])
+
+  useEffect(() => {
+    async function fetchSubscription() {
+      try {
+        const res = await fetch('/api/user/subscription')
+        const data = await res.json()
+        setSubscription(data)
+      } catch (error) {
+        console.error('Failed to fetch subscription:', error)
+      }
+    }
+    
+    if (session) {
+      fetchSubscription()
+    }
+  }, [session])
 
   useEffect(() => {
     setMobileMenuOpen(false)
@@ -112,9 +170,19 @@ export default function DashboardLayout({
             </div>
             <div className={styles.userDetails}>
               <div className={styles.userName}>{session.user?.name || 'User'}</div>
-              <div className={styles.userPlan}>Free Plan</div>
+              <div className={styles.userPlan}>
+                {subscription?.isPaid && !subscription?.isExpired ? (
+                  subscription.planName === 'lifetime' ? 'Lifetime Access' : 
+                  subscription.subscriptionExpiryDate ? 
+                    `Expires ${new Date(subscription.subscriptionExpiryDate).toLocaleDateString()}` :
+                    'Premium'
+                ) : (
+                  'Free Plan'
+                )}
+              </div>
             </div>
           </div>
+          <ThemeToggle />
           <button onClick={() => signOut({ callbackUrl: '/' })} className={styles.signOutBtn}>
             Sign Out
           </button>

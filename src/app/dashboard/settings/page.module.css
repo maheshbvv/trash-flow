@@ -198,6 +198,12 @@
   border-bottom: none;
 }
 
+.scheduleActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .scheduleIcon {
   width: 40px;
   height: 40px;
@@ -226,40 +232,45 @@
 }
 
 .deleteBtn {
-  width: 36px;
-  height: 36px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--on-surface-variant);
+  border-radius: 9999px;
+  background: var(--error-container);
+  color: var(--error);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
   transition: all 0.2s;
 }
 
 .deleteBtn:hover {
-  background: var(--error-container);
-  color: var(--error);
+  background: var(--error);
+  color: var(--on-error);
 }
 
 .runNowBtn {
-  width: 36px;
-  height: 36px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--primary);
+  border-radius: 9999px;
+  background: var(--primary);
+  color: var(--on-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
   transition: all 0.2s;
 }
 
 .runNowBtn:hover {
   background: var(--primary-container);
+  color: var(--primary);
 }
 
 /* Toggle Cards */
@@ -397,6 +408,28 @@
   .toggleGrid {
     grid-template-columns: 1fr;
   }
+  
+  .scheduleItem {
+    flex-wrap: wrap;
+  }
+  
+  .scheduleInfo {
+    flex: 1 1 100%;
+    margin-bottom: 12px;
+  }
+  
+  .scheduleActions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .runNowBtn,
+  .deleteBtn {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 }
 
 /* Toast Notifications */
@@ -445,16 +478,4 @@
 
 .toastError .material-symbols-outlined {
   color: #ef4444;
-}
-  
-  .formRow {
-    grid-template-columns: 1fr;
-  }
-  
-  .dangerContent {
-    flex-direction: column;
-    gap: 16px;
-    text-align: left;
-    align-items: flex-start;
-  }
 }

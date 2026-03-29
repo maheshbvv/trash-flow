@@ -90,7 +90,7 @@ const pricingPlans = [
   },
   {
     name: 'Lifetime',
-    price: '₹3,000',
+    price: '₹4,499',
     description: 'One-time payment',
     features: ['Unlimited forever', 'All features included', 'Priority support', 'Early access to new features'],
     cta: 'Get Lifetime',

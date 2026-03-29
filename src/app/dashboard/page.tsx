@@ -11,6 +11,15 @@ interface VolumeData {
   count: number
 }
 
+interface Schedule {
+  id: string
+  name: string
+  fromEmail: string | null
+  isMarketing: boolean
+  frequency: string
+  isActive: boolean
+}
+
 interface Stats {
   totalDeleted: number
   totalOperations: number
@@ -24,14 +33,40 @@ interface Stats {
 export default function Dashboard() {
   const { data: session } = useSession()
   const [stats, setStats] = useState<Stats | null>(null)
+  const [schedules, setSchedules] = useState<Schedule[]>([])
   const [loading, setLoading] = useState(true)
   const [showSuccess, setShowSuccess] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (params.get('subscription') === 'success') {
-      setShowSuccess(true)
+    const orderStatus = params.get('order_status')
+    const orderId = params.get('order_id')
+
+    const verifyAndUpdateSubscription = async () => {
+      try {
+        // Use subscription API to verify and activate
+        const res = await fetch('/api/user/subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ verifySubscription: true })
+        })
+        const data = await res.json()
+        
+        if (data.success) {
+          setShowSuccess(true)
+          // Refresh page after short delay
+          setTimeout(() => window.location.reload(), 1500)
+        }
+      } catch (error) {
+        console.error('Payment verification failed:', error)
+      }
+      // Always clean up URL
       window.history.replaceState({}, '', '/dashboard')
+    }
+
+    // If there's an order_status or order_id, verify subscription
+    if (orderStatus === 'PAID' || orderId) {
+      verifyAndUpdateSubscription()
     }
   }, [])
 
@@ -47,9 +82,20 @@ export default function Dashboard() {
         setLoading(false)
       }
     }
+
+    async function fetchSchedules() {
+      try {
+        const res = await fetch('/api/user/schedules')
+        const data = await res.json()
+        setSchedules(data.schedules || [])
+      } catch (error) {
+        console.error('Failed to fetch schedules:', error)
+      }
+    }
     
     if (session) {
       fetchStats()
+      fetchSchedules()
     }
   }, [session])
 
@@ -119,19 +165,35 @@ export default function Dashboard() {
         <div className={styles.metricCardSmall}>
           <div>
             <p className={styles.metricCardLabel}>Active Rules</p>
-            <h4 className={styles.metricCardValue}>0</h4>
+            <h4 className={styles.metricCardValue}>{schedules.length}</h4>
           </div>
-          <div className={styles.avatarStack}>
-            <div className={styles.avatarStackItem} style={{ background: '#E3F2FD' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#1976D2' }}>mail</span>
+          {schedules.length > 0 ? (
+            <div className={styles.avatarStack}>
+              {schedules.slice(0, 3).map((schedule) => (
+                <div 
+                  key={schedule.id} 
+                  className={styles.avatarStackItem} 
+                  style={{ background: schedule.isMarketing ? '#FFEBEE' : '#E3F2FD' }}
+                  title={schedule.name}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px', color: schedule.isMarketing ? '#C62828' : '#1976D2' }}>
+                    {schedule.isMarketing ? 'campaign' : 'mail'}
+                  </span>
+                </div>
+              ))}
+              {schedules.length > 3 && (
+                <div className={styles.avatarStackItem} style={{ background: '#F5F5F5' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#616161' }}>+{schedules.length - 3}</span>
+                </div>
+              )}
             </div>
-            <div className={styles.avatarStackItem} style={{ background: '#FFEBEE' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#C62828' }}>campaign</span>
+          ) : (
+            <div className={styles.avatarStack}>
+              <div className={styles.avatarStackItem} style={{ background: '#F5F5F5' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#616161' }}>add</span>
+              </div>
             </div>
-            <div className={styles.avatarStackItem} style={{ background: '#F5F5F5' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#616161' }}>receipt</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Volume Chart */}

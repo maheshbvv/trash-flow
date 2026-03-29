@@ -52,22 +52,37 @@ export async function GET() {
       }
     }
 
-    const limits = {
+    const limits: Record<string, { maxDeletions: number, name: string }> = {
       free: { maxDeletions: 500, name: 'Free Trial' },
       yearly: { maxDeletions: -1, name: 'Yearly' },
       lifetime: { maxDeletions: -1, name: 'Lifetime' }
     }
 
-    const currentPlan = limits[user.subscriptionType as keyof typeof limits] || limits.free
+    const currentPlan = limits[user.subscriptionType] || limits.free
+
+    const isTester = user.isTester === true
+    const effectiveMaxDeletions = isTester ? -1 : currentPlan.maxDeletions
+    const effectivePlanName = isTester ? 'Tester' : currentPlan.name
+    
+    // Check if subscription is expired
+    const now = new Date()
+    const isExpired = user.subscriptionType !== 'free' && 
+                      user.subscriptionType !== 'lifetime' && 
+                      user.subscriptionExpiryDate && 
+                      new Date(user.subscriptionExpiryDate) < now
 
     return NextResponse.json({
       subscriptionType: user.subscriptionType,
       isPaid: user.isPaid,
-      isTester: user.isTester,
+      isTester: isTester,
+      isExpired: isExpired,
       deletionsUsed: user.deletionsUsed,
-      maxDeletions: currentPlan.maxDeletions,
-      planName: currentPlan.name,
-      lemonsqueezyId: user.lemonsqueezyId
+      maxDeletions: effectiveMaxDeletions,
+      planName: effectivePlanName,
+      subscriptionStartDate: user.subscriptionStartDate,
+      subscriptionExpiryDate: user.subscriptionExpiryDate,
+      lemonsqueezyId: user.lemonsqueezyId,
+      amountPaid: user.amountPaid
     })
   } catch (error) {
     console.error("Error fetching subscription:", error)
@@ -84,9 +99,180 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { productId } = body
+    const { productId, verifySubscription } = body
 
-    // Product IDs from LemonSqueezy
+    // If verifySubscription is true, check and update subscription status
+    if (verifySubscription) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      })
+
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 })
+      }
+
+      const orderId = user.lemonsqueezyId
+      if (!orderId) {
+        return NextResponse.json({ 
+          subscription: {
+            isPaid: user.isPaid,
+            subscriptionType: user.subscriptionType,
+            subscriptionExpiryDate: user.subscriptionExpiryDate
+          },
+          message: "No payment order found"
+        })
+      }
+
+      // If already processed as 'yearly' or 'lifetime', just return current status
+      if ((user.subscriptionType === 'yearly' || user.subscriptionType === 'lifetime') && user.isPaid) {
+        return NextResponse.json({ 
+          subscription: {
+            isPaid: user.isPaid,
+            subscriptionType: user.subscriptionType,
+            subscriptionExpiryDate: user.subscriptionExpiryDate
+          },
+          message: "Subscription already active"
+        })
+      }
+
+      // If orderId starts with cf_ but subscription is still free, something went wrong - verify again
+      if (orderId.startsWith('cf_') && user.subscriptionType === 'free') {
+        console.log("Order marked as cf_ but subscription is still free, re-verifying...")
+      }
+
+      const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID
+      const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY
+      
+      console.log("Verifying order:", orderId, "for user:", session.user.email)
+
+      if (!CASHFREE_APP_ID || !CASHFREE_SECRET_KEY) {
+        return NextResponse.json({ error: "Cashfree not configured" }, { status: 500 })
+      }
+
+      // Try to get order by ID first
+      let orderData: any = null
+      
+      try {
+        const cashfreeResponse = await fetch(
+          `https://api.cashfree.com/pg/orders/${orderId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'x-client-id': CASHFREE_APP_ID,
+              'x-client-secret': CASHFREE_SECRET_KEY,
+              'x-api-version': '2025-01-01'
+            },
+          }
+        )
+
+        console.log("Cashfree response status:", cashfreeResponse.status)
+
+        if (!cashfreeResponse.ok) {
+          const errorText = await cashfreeResponse.text()
+          console.error("Cashfree verification failed:", cashfreeResponse.status, errorText)
+          
+          // Try searching by customer email as fallback
+          console.log("Trying search by customer email...")
+          const searchResponse = await fetch(
+            `https://api.cashfree.com/pg/orders?customer_id=${encodeURIComponent(session.user.email.replace(/[^a-zA-Z0-9_-]/g, '_'))}`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'x-client-id': CASHFREE_APP_ID,
+                'x-client-secret': CASHFREE_SECRET_KEY,
+                'x-api-version': '2025-01-01'
+              },
+            }
+          )
+          
+          if (searchResponse.ok) {
+            const searchData = await searchResponse.json()
+            console.log("Search response:", JSON.stringify(searchData))
+            
+            // Find the most recent PAID order
+            const orders = searchData.items || []
+            const paidOrder = orders.find((o: any) => o.order_status === 'PAID')
+            
+            if (paidOrder) {
+              orderData = { order: paidOrder }
+              console.log("Found paid order:", paidOrder.order_id)
+            } else {
+              return NextResponse.json({ message: "No paid orders found for your email" }, { status: 200 })
+            }
+          } else {
+            return NextResponse.json({ error: "Failed to verify payment", details: errorText }, { status: 500 })
+          }
+        } else {
+          orderData = await cashfreeResponse.json()
+        }
+      } catch (err) {
+        console.error("Error fetching order:", err)
+        return NextResponse.json({ error: "Error verifying payment" }, { status: 500 })
+      }
+
+      // Get order status
+      const orderStatus = orderData?.order?.status || orderData?.order_status || ''
+      console.log("Order status extracted:", orderStatus)
+
+      if (orderStatus === "PAID") {
+        // Try different response structures for amount
+        const orderAmount = orderData?.order?.order_amount ?? orderData?.order_amount ?? orderData?.order?.order_amount ?? 0
+        console.log("Order amount:", orderAmount, "type:", typeof orderAmount)
+        
+        let subscriptionType = 'free'
+        let subscriptionExpiryDate: Date | null = null
+
+        if (orderAmount === 1499) {
+          subscriptionType = 'yearly'
+          subscriptionExpiryDate = new Date()
+          subscriptionExpiryDate.setFullYear(subscriptionExpiryDate.getFullYear() + 1)
+        } else if (orderAmount === 4499) {
+          subscriptionType = 'lifetime'
+          subscriptionExpiryDate = new Date()
+          subscriptionExpiryDate.setFullYear(subscriptionExpiryDate.getFullYear() + 100)
+        }
+
+        // Get the actual order ID from the response
+        const actualOrderId = orderData?.order?.order_id || orderData?.order_id || orderId
+        
+        await prisma.user.update({
+          where: { email: session.user.email },
+          data: {
+            isPaid: true,
+            subscriptionType,
+            subscriptionStartDate: new Date(),
+            subscriptionExpiryDate,
+            lemonsqueezyId: `cf_${actualOrderId}`,
+            amountPaid: orderAmount
+          }
+        })
+
+        return NextResponse.json({ 
+          success: true,
+          subscription: {
+            isPaid: true,
+            subscriptionType,
+            subscriptionExpiryDate
+          },
+          message: `Subscription activated: ${subscriptionType}`
+        })
+      }
+
+      return NextResponse.json({ 
+        subscription: {
+          isPaid: user.isPaid,
+          subscriptionType: user.subscriptionType,
+          subscriptionExpiryDate: user.subscriptionExpiryDate
+        },
+        message: `Payment status: ${orderStatus}`
+      })
+    }
+
+    // Original checkout flow
     const products: Record<string, { type: string; name: string }> = {
       '921198': { type: 'free', name: 'Free Trial' },
       '921195': { type: 'yearly', name: 'Yearly' },
@@ -98,7 +284,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid product" }, { status: 400 })
     }
 
-    // For free trial, just update the user
     if (productId === '921198') {
       await prisma.user.update({
         where: { email: session.user.email },
@@ -110,7 +295,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, message: "Free trial activated" })
     }
 
-    // Use direct buy links from LemonSqueezy
     const buyLinks: Record<string, string> = {
       '921195': 'https://trashflow.lemonsqueezy.com/checkout/buy/921195',
       '921200': 'https://trashflow.lemonsqueezy.com/checkout/buy/921200'
@@ -120,8 +304,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ checkoutUrl })
   } catch (error) {
-    console.error("Error creating checkout:", error)
-    return NextResponse.json({ error: "Failed to create checkout" }, { status: 500 })
+    console.error("Error in subscription POST:", error)
+    return NextResponse.json({ error: "Request failed" }, { status: 500 })
   }
 }
 

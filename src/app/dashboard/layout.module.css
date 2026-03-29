@@ -178,6 +178,28 @@
   color: var(--on-surface);
 }
 
+.themeToggle {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.themeToggle:hover {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
 .main {
   flex: 1;
   margin-left: 260px;

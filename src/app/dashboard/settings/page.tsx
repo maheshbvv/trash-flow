@@ -21,9 +21,14 @@ interface Schedule {
 interface Subscription {
   subscriptionType: string
   isPaid: boolean
+  isTester: boolean
+  isExpired: boolean
   deletionsUsed: number
   maxDeletions: number
   planName: string
+  subscriptionStartDate: string | null
+  subscriptionExpiryDate: string | null
+  amountPaid: number | null
 }
 
 export default function Settings() {
@@ -49,6 +54,9 @@ export default function Settings() {
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null)
   const [cashfreeSdk, setCashfreeSdk] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const [deleteScheduleId, setDeleteScheduleId] = useState<string | null>(null)
+  const [isDeletingSchedule, setIsDeletingSchedule] = useState(false)
+  const [isVerifying, setIsVerifying] = useState(false)
 
   useEffect(() => {
     fetchSchedules()
@@ -129,6 +137,8 @@ export default function Settings() {
         body: JSON.stringify(formData)
       })
 
+      const data = await res.json()
+      
       if (res.ok) {
         setShowForm(false)
         setFormData({
@@ -140,6 +150,11 @@ export default function Settings() {
           frequency: 'weekly'
         })
         fetchSchedules()
+      } else if (data.upgradeRequired) {
+        setToast({ message: 'Scheduling requires a paid subscription', type: 'error' })
+        setShowPricing(true)
+      } else {
+        setToast({ message: data.error || 'Failed to save schedule', type: 'error' })
       }
     } catch (error) {
       console.error('Failed to save schedule:', error)
@@ -148,14 +163,18 @@ export default function Settings() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this schedule?')) return
-
+  const handleDelete = async () => {
+    if (!deleteScheduleId) return
+    setIsDeletingSchedule(true)
     try {
-      await fetch(`/api/user/schedules?id=${id}`, { method: 'DELETE' })
+      await fetch(`/api/user/schedules?id=${deleteScheduleId}`, { method: 'DELETE' })
+      setDeleteScheduleId(null)
       fetchSchedules()
     } catch (error) {
       console.error('Failed to delete schedule:', error)
+      setToast({ message: 'Failed to delete schedule', type: 'error' })
+    } finally {
+      setIsDeletingSchedule(false)
     }
   }
 
@@ -188,12 +207,29 @@ export default function Settings() {
     return labels[freq] || freq
   }
 
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading settings...</div>
-      </div>
-    )
+  const handleVerifySubscription = async () => {
+    setIsVerifying(true)
+    try {
+      const res = await fetch('/api/user/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verifySubscription: true })
+      })
+      const data = await res.json()
+      
+      if (data.success) {
+        setToast({ message: `Subscription activated: ${data.subscription.subscriptionType}`, type: 'success' })
+        // Fetch subscription multiple times to ensure update
+        fetchSubscription()
+        setTimeout(() => fetchSubscription(), 500)
+      } else {
+        setToast({ message: data.message || data.error || 'Verification failed', type: 'error' })
+      }
+    } catch (error) {
+      setToast({ message: 'Failed to verify subscription', type: 'error' })
+    } finally {
+      setIsVerifying(false)
+    }
   }
 
   useEffect(() => {
@@ -202,6 +238,14 @@ export default function Settings() {
       return () => clearTimeout(timer)
     }
   }, [toast])
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Loading settings...</div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>
@@ -262,32 +306,117 @@ export default function Settings() {
         </div>
         
         <div className={styles.formCard}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <div>
-              <p style={{ fontSize: '18px', fontWeight: '600' }}>{subscription?.planName || 'Free Trial'}</p>
-              <p style={{ color: 'var(--on-surface-variant)', marginTop: '4px' }}>
-                {subscription?.maxDeletions === -1 
-                  ? 'Unlimited deletions' 
-                  : `${subscription?.deletionsUsed || 0} / ${subscription?.maxDeletions || 100} deletions used`}
-              </p>
+          {subscription?.isPaid && !subscription?.isExpired ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <p style={{ fontSize: '20px', fontWeight: '700', color: 'var(--primary)' }}>
+                      {subscription?.planName}
+                    </p>
+                    <span style={{ 
+                      background: '#10b981', 
+                      color: 'white', 
+                      fontSize: '11px', 
+                      padding: '4px 10px', 
+                      borderRadius: '20px',
+                      fontWeight: '600'
+                    }}>
+                      ACTIVE
+                    </span>
+                  </div>
+                  <p style={{ color: '#10b981', fontWeight: '500', marginTop: '6px' }}>
+                    Unlimited deletions
+                  </p>
+                </div>
+              </div>
+              
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+                gap: '12px',
+                marginTop: '8px',
+                padding: '16px',
+                background: 'var(--surface-container-high)',
+                borderRadius: '12px'
+              }}>
+                <div>
+                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '12px', marginBottom: '4px' }}>Amount Paid</p>
+                  <p style={{ fontWeight: '600' }}>₹{subscription.amountPaid || 0}</p>
+                </div>
+                <div>
+                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '12px', marginBottom: '4px' }}>Start Date</p>
+                  <p style={{ fontWeight: '600' }}>{subscription.subscriptionStartDate ? new Date(subscription.subscriptionStartDate).toLocaleDateString() : '-'}</p>
+                </div>
+                <div>
+                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '12px', marginBottom: '4px' }}>{subscription.planName === 'Lifetime' ? 'Valid Till' : 'Expires On'}</p>
+                  <p style={{ fontWeight: '600' }}>{subscription.subscriptionExpiryDate ? new Date(subscription.subscriptionExpiryDate).toLocaleDateString() : '-'}</p>
+                </div>
+              </div>
             </div>
-            {!subscription?.isPaid && subscription?.maxDeletions !== -1 && (
-              <button 
-                onClick={() => setShowPricing(true)}
-                style={{
-                  background: 'var(--primary)',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: '600'
-                }}
-              >
-                Upgrade
-              </button>
-            )}
-          </div>
+          ) : (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <p style={{ fontSize: '20px', fontWeight: '700' }}>
+                    {subscription?.maxDeletions === -1 ? 'Free Plan' : 'Free Trial'}
+                  </p>
+                  {subscription?.isExpired && (
+                    <span style={{ 
+                      background: 'var(--error)', 
+                      color: 'white', 
+                      fontSize: '11px', 
+                      padding: '4px 10px', 
+                      borderRadius: '20px',
+                      fontWeight: '600'
+                    }}>
+                      EXPIRED
+                    </span>
+                  )}
+                </div>
+                <p style={{ color: 'var(--on-surface-variant)', marginTop: '6px' }}>
+                  {subscription?.maxDeletions === -1 
+                    ? 'Unlimited deletions (tester)' 
+                    : `${subscription?.deletionsUsed || 0} / ${subscription?.maxDeletions || 100} deletions used`}
+                </p>
+              </div>
+              {(!subscription?.isPaid || subscription?.isExpired) && (
+                <button 
+                  onClick={() => setShowPricing(true)}
+                  style={{
+                    background: 'var(--primary)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {subscription?.isExpired ? 'Renew' : 'Upgrade'}
+                </button>
+              )}
+              {subscription?.isPaid && !subscription?.isExpired && (
+                <button 
+                  onClick={handleVerifySubscription}
+                  disabled={isVerifying}
+                  style={{
+                    background: 'var(--surface-container-high)',
+                    color: 'var(--on-surface)',
+                    border: '1px solid var(--outline)',
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    cursor: isVerifying ? 'not-allowed' : 'pointer',
+                    fontWeight: '500',
+                    fontSize: '14px'
+                  }}
+                >
+                  {isVerifying ? 'Verifying...' : 'Verify'}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
@@ -308,57 +437,12 @@ export default function Settings() {
           <div style={{
             background: 'var(--surface)',
             borderRadius: '16px',
-            padding: '32px',
-            maxWidth: '500px',
+            padding: '24px',
+            maxWidth: '420px',
             width: '90%'
           }}>
-            <h2 style={{ fontSize: '24px', marginBottom: '24px', textAlign: 'center' }}>Choose Your Plan</h2>
-            
-            {error && (
-              <div style={{ 
-                marginBottom: '16px', 
-                padding: '12px', 
-                border: '1px solid #dc2626', 
-                borderRadius: '8px', 
-                background: '#fef2f2',
-                color: '#dc2626',
-                fontSize: '14px'
-              }}>
-                {error}
-              </div>
-            )}
-            
-            <div style={{ marginBottom: '16px', padding: '16px', border: '1px solid var(--outline)', borderRadius: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontWeight: '600' }}>Free Trial</p>
-                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>100 deletions total</p>
-                </div>
-                <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Free</span>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '16px', padding: '16px', border: '1px solid var(--primary)', borderRadius: '12px', background: 'rgba(187,23,18,0.05)', cursor: 'pointer' }} onClick={() => handlePayment('yearly')}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontWeight: '600' }}>Yearly</p>
-                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>Unlimited deletions</p>
-                </div>
-                <span style={{ fontWeight: '600', color: 'var(--primary)' }}>₹1,499/year</span>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '24px', padding: '16px', border: '1px solid var(--primary)', borderRadius: '12px', background: 'rgba(187,23,18,0.05)', cursor: 'pointer' }} onClick={() => handlePayment('lifetime')}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontWeight: '600' }}>Lifetime</p>
-                  <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>One-time payment</p>
-                </div>
-                <span style={{ fontWeight: '600', color: 'var(--primary)' }}>₹3,000</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '700', margin: 0 }}>Choose Your Plan</h2>
               <button 
                 onClick={() => {
                   setShowPricing(false)
@@ -366,16 +450,112 @@ export default function Settings() {
                 }}
                 style={{
                   background: 'transparent',
-                  color: 'var(--on-surface)',
-                  border: '1px solid var(--outline)',
-                  padding: '12px 24px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   borderRadius: '8px',
-                  cursor: 'pointer'
+                  color: 'var(--on-surface-variant)'
                 }}
               >
-                Close
+                <span className="material-symbols-outlined">close</span>
               </button>
             </div>
+            
+            {error && (
+              <div style={{ 
+                marginBottom: '16px', 
+                padding: '12px', 
+                border: '1px solid var(--error)', 
+                borderRadius: '8px', 
+                background: 'var(--error-container)',
+                color: 'var(--error)',
+                fontSize: '14px'
+              }}>
+                {error}
+              </div>
+            )}
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div 
+                style={{ 
+                  padding: '20px', 
+                  border: '1px solid var(--outline)', 
+                  borderRadius: '16px',
+                  background: 'var(--surface-container-high)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div>
+                    <p style={{ fontWeight: '600', fontSize: '16px' }}>Free Trial</p>
+                    <p style={{ color: 'var(--on-surface-variant)', fontSize: '13px', marginTop: '4px' }}>500 deletions total</p>
+                  </div>
+                  <span style={{ fontWeight: '600', color: 'var(--on-surface-variant)', fontSize: '14px' }}>Free</span>
+                </div>
+              </div>
+
+              <div 
+                onClick={() => handlePayment('yearly')}
+                style={{ 
+                  padding: '20px', 
+                  border: '2px solid var(--primary)', 
+                  borderRadius: '16px',
+                  background: 'rgba(187, 134, 252, 0.08)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <p style={{ fontWeight: '600', fontSize: '16px', color: 'var(--primary)' }}>Yearly</p>
+                      <span style={{ 
+                        background: 'var(--primary)', 
+                        color: 'white', 
+                        fontSize: '10px', 
+                        padding: '2px 8px', 
+                        borderRadius: '10px',
+                        fontWeight: '600'
+                      }}>POPULAR</span>
+                    </div>
+                    <p style={{ color: 'var(--on-surface-variant)', fontSize: '13px', marginTop: '4px' }}>Unlimited deletions for 1 year</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontWeight: '700', color: 'var(--primary)', fontSize: '18px' }}>₹1,499</span>
+                    <p style={{ color: 'var(--on-surface-variant)', fontSize: '12px' }}>/year</p>
+                  </div>
+                </div>
+              </div>
+
+              <div 
+                onClick={() => handlePayment('lifetime')}
+                style={{ 
+                  padding: '20px', 
+                  border: '1px solid var(--primary)', 
+                  borderRadius: '16px',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <p style={{ fontWeight: '600', fontSize: '16px' }}>Lifetime</p>
+                    <p style={{ color: 'var(--on-surface-variant)', fontSize: '13px', marginTop: '4px' }}>Pay once, use forever</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontWeight: '700', fontSize: '18px' }}>₹4,499</span>
+                    <p style={{ color: 'var(--on-surface-variant)', fontSize: '12px' }}>one-time</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--on-surface-variant)', marginTop: '20px' }}>
+              Secure payment powered by Cashfree
+            </p>
 
             {checkoutUrl && (
               <div style={{ marginTop: '20px', height: '400px' }}>
@@ -392,153 +572,6 @@ export default function Settings() {
           </div>
         </div>
       )}
-
-      {/* Scheduled Cleanups */}
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionIcon}>
-            <span className="material-symbols-outlined">schedule</span>
-          </div>
-          <h2 className={styles.sectionTitle}>Scheduled Cleanups</h2>
-        </div>
-
-        {showForm && (
-          <div className={styles.formCard}>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="label">Schedule Name</label>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="e.g., Weekly Newsletter Cleanup"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div className={styles.formRow}>
-                <div className="form-group">
-                  <label className="label">Type</label>
-                  <select 
-                    className="input"
-                    value={formData.isMarketing ? 'marketing' : 'sender'}
-                    onChange={(e) => setFormData({...formData, isMarketing: e.target.value === 'marketing'})}
-                  >
-                    <option value="sender">By Sender</option>
-                    <option value="marketing">Marketing Emails</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="label">Frequency</label>
-                  <select 
-                    className="input"
-                    value={formData.frequency}
-                    onChange={(e) => setFormData({...formData, frequency: e.target.value})}
-                  >
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
-                </div>
-              </div>
-
-              {!formData.isMarketing && (
-                <div className="form-group">
-                  <label className="label">Sender Email (Optional)</label>
-                  <input
-                    type="email"
-                    className="input"
-                    placeholder="e.g., newsletter@example.com"
-                    value={formData.fromEmail}
-                    onChange={(e) => setFormData({...formData, fromEmail: e.target.value})}
-                  />
-                </div>
-              )}
-
-              <div className={styles.formRow}>
-                <div className="form-group">
-                  <label className="label">Date From</label>
-                  <input
-                    type="date"
-                    className="input"
-                    value={formData.dateFrom}
-                    onChange={(e) => setFormData({...formData, dateFrom: e.target.value})}
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="label">Date To</label>
-                  <input
-                    type="date"
-                    className="input"
-                    value={formData.dateTo}
-                    onChange={(e) => setFormData({...formData, dateTo: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formActions}>
-                <button 
-                  type="button" 
-                  onClick={() => setShowForm(false)}
-                  className="btn btn-outline"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn btn-primary"
-                  disabled={saving}
-                >
-                  {saving ? 'Saving...' : 'Save Schedule'}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {!showForm && (
-          <button onClick={() => setShowForm(true)} className={styles.addScheduleBtn}>
-            <span className="material-symbols-outlined">add</span>
-            Add Schedule
-          </button>
-        )}
-
-        {schedules.length > 0 && (
-          <div className={styles.scheduleList}>
-            {schedules.map((schedule) => (
-              <div key={schedule.id} className={styles.scheduleItem}>
-                <div className={styles.scheduleIcon}>
-                  <span className="material-symbols-outlined">
-                    {schedule.isMarketing ? 'campaign' : 'auto_delete'}
-                  </span>
-                </div>
-                <div className={styles.scheduleContent}>
-                  <div className={styles.scheduleName}>{schedule.name}</div>
-                  <div className={styles.scheduleMeta}>
-                    {getFrequencyLabel(schedule.frequency)}
-                    {schedule.lastRunAt && <> · Last run: {new Date(schedule.lastRunAt).toLocaleDateString()}</>}
-                  </div>
-                </div>
-                <button 
-                  onClick={() => handleRunNow(schedule.id)}
-                  className={styles.runNowBtn}
-                  title="Run now"
-                >
-                  <span className="material-symbols-outlined">play_arrow</span>
-                </button>
-                <button 
-                  onClick={() => handleDelete(schedule.id)}
-                  className={styles.deleteBtn}
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
 
       {/* Notification Preferences */}
       <section className={styles.section}>
